@@ -33,7 +33,10 @@ def record_judged_answer(session: Session, answer_text: str, judgment: Judgment)
             judgment=judgment,
         )
     )
-    session.covered_key_points.extend(judgment.covered_key_points)
+    # A follow-up answer often repeats a point the learner already made; count it once.
+    for key_point in judgment.covered_key_points:
+        if key_point not in session.covered_key_points:
+            session.covered_key_points.append(key_point)
 
 
 def advance_round(session: Session) -> None:

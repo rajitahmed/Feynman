@@ -23,7 +23,10 @@ def test_start_session_returns_the_first_round_question() -> None:
     response = client.post("/session/start", json={"notes": RECURSION_NOTES})
 
     assert response.status_code == HTTPStatus.OK
-    assert response.json() == {"kid_question": CANNED_RUBRIC.rounds[0].kid_question}
+    assert response.json() == {
+        "kid_question": CANNED_RUBRIC.rounds[0].kid_question,
+        "round_count": len(CANNED_RUBRIC.rounds),
+    }
 
 
 def test_start_session_saves_the_planned_rubric_to_a_file(

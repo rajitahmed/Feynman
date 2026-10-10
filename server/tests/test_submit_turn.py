@@ -25,6 +25,13 @@ FOLLOW_UP_JUDGMENT = Judgment(
     decision=Decision.FOLLOW_UP,
     kid_reply_text="Wait, what does it mean for a function to use itself?",
 )
+FIRST_KEY_POINT = CANNED_RUBRIC.rounds[0].key_points[0]
+PARTLY_COVERED_JUDGMENT = Judgment(
+    covered_key_points=[FIRST_KEY_POINT],
+    parroting=None,
+    decision=Decision.FOLLOW_UP,
+    kid_reply_text="Okay, but why does it use itself?",
+)
 
 client = TestClient(app)
 
@@ -65,6 +72,18 @@ def test_stays_on_round_and_counts_the_follow_up_when_judge_says_follow_up(
     assert second_response.json()["round_number"] == 1
     assert session_store.current_session is not None
     assert session_store.current_session.follow_up_count == 2
+
+
+def test_records_a_key_point_once_when_two_answers_cover_it(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    start_session_with_judgment(PARTLY_COVERED_JUDGMENT, monkeypatch)
+
+    client.post("/session/turn", json={"answer_text": ANSWER_TEXT})
+    client.post("/session/turn", json={"answer_text": ANSWER_TEXT})
+
+    assert session_store.current_session is not None
+    assert session_store.current_session.covered_key_points == [FIRST_KEY_POINT]
 
 
 def test_rejects_a_turn_before_any_session_started(monkeypatch: pytest.MonkeyPatch) -> None:

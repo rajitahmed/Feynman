@@ -64,6 +64,7 @@ export type StartSessionRequest = {
 
 export type StartSessionReply = {
   kid_question: string;
+  round_count: number;
 };
 
 export type SubmitTurnRequest = {

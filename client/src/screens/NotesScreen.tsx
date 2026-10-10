@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { startSession } from "../api/server.ts";
+import type { StartSessionReply } from "../api/types.ts";
 import Button from "../components/Button.tsx";
 import "./NotesScreen.css";
 
@@ -7,7 +8,7 @@ const KID_GREETING = "Hi! What are you teaching me today?";
 const NOTES_BOX_LINES = 12;
 
 type NotesScreenProps = {
-  onSessionStarted: (kidQuestion: string) => void;
+  onSessionStarted: (reply: StartSessionReply) => void;
 };
 
 function NotesScreen({ onSessionStarted }: NotesScreenProps) {
@@ -21,7 +22,7 @@ function NotesScreen({ onSessionStarted }: NotesScreenProps) {
     setErrorMessage("");
     try {
       const reply = await startSession({ notes });
-      onSessionStarted(reply.kid_question);
+      onSessionStarted(reply);
     } catch (error) {
       setErrorMessage(`Could not start the session: ${String(error)}`);
       setIsPreparing(false);

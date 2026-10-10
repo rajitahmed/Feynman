@@ -21,4 +21,6 @@ def start_session(
     rubric = plan_rounds(request.notes, language_model)
     save_rubric(rubric)
     session_store.current_session = Session(notes=request.notes, rubric=rubric)
-    return StartSessionReply(kid_question=rubric.rounds[0].kid_question)
+    return StartSessionReply(
+        kid_question=rubric.rounds[0].kid_question, round_count=len(rubric.rounds)
+    )
