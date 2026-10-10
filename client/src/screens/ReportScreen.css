@@ -90,3 +90,7 @@
 .report-screen__footer {
   text-align: center;
 }
+
+.report-screen__start-again {
+  align-self: center;
+}

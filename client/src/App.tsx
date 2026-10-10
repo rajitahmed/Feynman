@@ -5,16 +5,29 @@ import ReportScreen from "./screens/ReportScreen.tsx";
 import SessionScreen from "./screens/SessionScreen.tsx";
 
 function App() {
+  // Kept here, above the notes screen, so "Start again" brings the last notes back.
+  const [notes, setNotes] = useState("");
   const [startedSession, setStartedSession] =
     useState<StartSessionReply | null>(null);
   const [report, setReport] = useState<GapReport | null>(null);
 
+  function startAgain() {
+    setStartedSession(null);
+    setReport(null);
+  }
+
   if (startedSession === null) {
-    return <NotesScreen onSessionStarted={setStartedSession} />;
+    return (
+      <NotesScreen
+        notes={notes}
+        onNotesChange={setNotes}
+        onSessionStarted={setStartedSession}
+      />
+    );
   }
 
   if (report !== null) {
-    return <ReportScreen report={report} />;
+    return <ReportScreen report={report} onStartAgain={startAgain} />;
   }
 
   return (

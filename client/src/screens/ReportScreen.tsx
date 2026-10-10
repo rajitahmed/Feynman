@@ -1,13 +1,15 @@
 import type { GapReport } from "../api/types.ts";
+import Button from "../components/Button.tsx";
 import KidAvatar from "../components/KidAvatar.tsx";
 import RoundCard from "../components/RoundCard.tsx";
 import "./ReportScreen.css";
 
 type ReportScreenProps = {
   report: GapReport;
+  onStartAgain: () => void;
 };
 
-function ReportScreen({ report }: ReportScreenProps) {
+function ReportScreen({ report, onStartAgain }: ReportScreenProps) {
   const todayText = new Date().toLocaleDateString(undefined, {
     dateStyle: "long",
   });
@@ -85,6 +87,10 @@ function ReportScreen({ report }: ReportScreenProps) {
       <p className="report-screen__muted report-screen__footer">
         No score here, just the parts to practice next.
       </p>
+
+      <Button className="report-screen__start-again" onClick={onStartAgain}>
+        Start again
+      </Button>
     </main>
   );
 }

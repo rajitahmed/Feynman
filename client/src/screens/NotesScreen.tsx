@@ -14,11 +14,16 @@ import "./NotesScreen.css";
 const NOTES_BOX_LINES = 12;
 
 type NotesScreenProps = {
+  notes: string;
+  onNotesChange: (notes: string) => void;
   onSessionStarted: (reply: StartSessionReply) => void;
 };
 
-function NotesScreen({ onSessionStarted }: NotesScreenProps) {
-  const [notes, setNotes] = useState("");
+function NotesScreen({
+  notes,
+  onNotesChange,
+  onSessionStarted,
+}: NotesScreenProps) {
   const [isPreparing, setIsPreparing] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [kidGreeting, setKidGreeting] = useState("");
@@ -78,7 +83,7 @@ function NotesScreen({ onSessionStarted }: NotesScreenProps) {
           rows={NOTES_BOX_LINES}
           placeholder="Paste your study notes here..."
           value={notes}
-          onChange={(event) => setNotes(event.target.value)}
+          onChange={(event) => onNotesChange(event.target.value)}
         />
         {errorMessage && <p role="alert">{errorMessage}</p>}
         <Button type="submit" disabled={!hasNotes}>
