@@ -21,6 +21,7 @@ function NotesScreen({ onSessionStarted }: NotesScreenProps) {
   const [isPreparing, setIsPreparing] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [kidGreeting, setKidGreeting] = useState("");
+  const hasNotes = notes.trim() !== "";
 
   useEffect(() => {
     // The greeting is a nicety; without it the kid just waits quietly.
@@ -35,12 +36,14 @@ function NotesScreen({ onSessionStarted }: NotesScreenProps) {
   }
 
   async function beginSession(
-    start: (request: StartSessionRequest) => Promise<StartSessionReply>,
+    requestSessionStart: (
+      request: StartSessionRequest,
+    ) => Promise<StartSessionReply>,
   ) {
     setIsPreparing(true);
     setErrorMessage("");
     try {
-      const reply = await start({ notes });
+      const reply = await requestSessionStart({ notes });
       onSessionStarted(reply);
     } catch (error) {
       setErrorMessage(`Could not start the session: ${String(error)}`);
@@ -77,14 +80,14 @@ function NotesScreen({ onSessionStarted }: NotesScreenProps) {
           onChange={(event) => setNotes(event.target.value)}
         />
         {errorMessage && <p role="alert">{errorMessage}</p>}
-        <Button type="submit" disabled={notes.trim() === ""}>
+        <Button type="submit" disabled={!hasNotes}>
           Start
         </Button>
         {/* Backup if live planning fails on stage; also rehearses without spending credits. */}
         <button
           type="button"
           className="notes-screen__demo-link"
-          disabled={notes.trim() === ""}
+          disabled={!hasNotes}
           onClick={() => void beginSession(startDemoSession)}
         >
           Use demo rubric
