@@ -1,25 +1,17 @@
 import { useState } from "react";
-import { checkHealth } from "./api/server.ts";
+import NotesScreen from "./screens/NotesScreen.tsx";
 
 function App() {
-  const [serverReply, setServerReply] = useState("");
+  const [kidQuestion, setKidQuestion] = useState("");
 
-  async function askServer() {
-    try {
-      const healthCheck = await checkHealth();
-      setServerReply(`Server says: ${healthCheck.status}`);
-    } catch (error) {
-      setServerReply(`Could not reach the server: ${String(error)}`);
-    }
+  if (kidQuestion === "") {
+    return <NotesScreen onSessionStarted={setKidQuestion} />;
   }
 
+  // ponytail: placeholder until the session screen lands (#4).
   return (
     <main>
-      <h1>Feynman</h1>
-      <button type="button" onClick={askServer}>
-        Ask the server
-      </button>
-      <p>{serverReply}</p>
+      <p>{kidQuestion}</p>
     </main>
   );
 }

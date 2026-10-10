@@ -1,0 +1,8 @@
+from services.canned_rubric import CANNED_RUBRIC
+from services.fake_language_model import FakeLanguageModel
+from services.language_model import LanguageModel
+
+
+def get_language_model() -> LanguageModel:
+    # ponytail: the fake until the real Gemini adapter lands (#11), so local runs are free.
+    return FakeLanguageModel(canned_replies=[CANNED_RUBRIC])

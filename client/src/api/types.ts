@@ -58,7 +58,10 @@ export type GapReport = {
   re_explain_prompts: string[];
 };
 
-// Mirrors the reply of the server's /health route.
-export type HealthCheck = {
-  status: string;
+export type StartSessionRequest = {
+  notes: string;
+};
+
+export type StartSessionReply = {
+  kid_question: string;
 };

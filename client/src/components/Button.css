@@ -1,0 +1,26 @@
+.button {
+  --button-color: var(--color-green);
+  --button-edge-color: var(--color-green-edge);
+  font: 800 var(--font-size-large) var(--font-family);
+  color: white;
+  background: var(--button-color);
+  border: none;
+  border-radius: var(--radius-button);
+  padding: var(--space-3) var(--space-8);
+  box-shadow: 0 var(--button-edge) 0 var(--button-edge-color);
+  cursor: pointer;
+  transition:
+    transform var(--duration-fast),
+    box-shadow var(--duration-fast);
+}
+
+.button:active {
+  transform: translateY(var(--button-edge));
+  box-shadow: 0 0 0 var(--button-edge-color);
+}
+
+.button:disabled {
+  --button-color: var(--color-avatar-light);
+  --button-edge-color: var(--color-avatar-dark);
+  cursor: not-allowed;
+}

@@ -24,3 +24,6 @@ dist/
 Thumbs.db
 .vscode/
 .idea/
+
+# Planner output, regenerated every session
+server/planned_rubric.json
