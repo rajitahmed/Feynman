@@ -131,6 +131,7 @@ Everything important we decided while planning, with the reason. Last updated Oc
 | 62 | **Revised:** paste a short code-rules block into the AI assistant at the start of every session. It now covers both Python and TypeScript. | Keeps the AI's output in the team's style. The block is in `docs/AI_RULES.md`. |
 | 63 | Add a short readability pass before demo prep: read everything once and rename, delete, merge and split as needed. | Catches drift that builds up during a fast build. |
 | 64 | Keep React at setup (ticket #1); the plain TypeScript fallback is not taken. | The Vite React scaffold was simple enough, and every frontend ticket explains its components as they are written. |
+| 65 | ElevenLabs gets its own switch, `SHOULD_USE_REAL_ELEVENLABS`, separate from `SHOULD_USE_REAL_GEMINI` (ticket #12). Both default to fake. | Lets us rehearse the real judge without spending voice credits, and keeps each switch name honest. |
 
 ## Out of scope
 

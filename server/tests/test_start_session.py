@@ -21,6 +21,8 @@ RECURSION_NOTES = "Recursion is when a function calls itself until it reaches a 
 app.dependency_overrides[get_language_model] = lambda: FakeLanguageModel(
     canned_replies=[CANNED_RUBRIC]
 )
+# The test client skips startup, so there are no settings to pick the voice service from.
+app.dependency_overrides[get_text_to_speech] = FakeTextToSpeech
 client = TestClient(app)
 
 

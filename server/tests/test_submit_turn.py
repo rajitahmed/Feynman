@@ -16,6 +16,10 @@ from services.get_text_to_speech import get_text_to_speech
 from session.session_store import session_store
 from session.take_turn import FUZZY_KID_LINE, MAX_FOLLOW_UPS_PER_ROUND
 
+# The test client skips startup, so there are no settings to pick the voice services from.
+app.dependency_overrides[get_speech_to_text] = FakeSpeechToText
+app.dependency_overrides[get_text_to_speech] = FakeTextToSpeech
+
 RECURSION_NOTES = "Recursion is when a function calls itself until it reaches a base case."
 ANSWER_TEXT = "It's when a function uses itself to solve a smaller piece of the problem."
 

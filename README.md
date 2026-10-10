@@ -4,7 +4,7 @@ Voice-first Feynman-method practice tool. See `docs/SPEC.md`.
 
 ## Run it
 
-Server (needs [uv](https://docs.astral.sh/uv/)). Copy `server/.env.example` to `server/.env` and fill in the keys first. The server uses canned Gemini replies until you set `SHOULD_USE_REAL_GEMINI=true`.
+Server (needs [uv](https://docs.astral.sh/uv/)). Copy `server/.env.example` to `server/.env` and fill in the keys first. The server uses canned Gemini replies until you set `SHOULD_USE_REAL_GEMINI=true`, and silent fake voice until you set `SHOULD_USE_REAL_ELEVENLABS=true`.
 
 ```
 cd server
