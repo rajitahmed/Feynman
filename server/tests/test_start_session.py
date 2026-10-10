@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
+from pydantic import BaseModel
 
 from main import app
 from models.rubric import Rubric
@@ -13,6 +14,7 @@ from services.fake_language_model import FakeLanguageModel
 from services.fake_text_to_speech import PLACEHOLDER_CLIP, FakeTextToSpeech
 from services.get_language_model import get_language_model
 from services.get_text_to_speech import get_text_to_speech
+from services.language_model import InvalidReplyError
 
 RECURSION_NOTES = "Recursion is when a function calls itself until it reaches a base case."
 
@@ -59,3 +61,23 @@ def test_start_session_rejects_blank_notes() -> None:
     response = client.post("/session/start", json={"notes": "   "})
 
     assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
+
+
+class MisshapenLanguageModel:
+    """Answers every prompt with a reply that doesn't fit the shape asked for."""
+
+    def generate[ReplyShape: BaseModel](
+        self, prompt: str, reply_shape: type[ReplyShape]
+    ) -> ReplyShape:
+        raise InvalidReplyError(f"Reply didn't fit {reply_shape.__name__}")
+
+
+def test_start_session_reports_a_misshapen_plan_as_a_bad_gateway(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setitem(app.dependency_overrides, get_language_model, MisshapenLanguageModel)
+
+    response = client.post("/session/start", json={"notes": RECURSION_NOTES})
+
+    assert response.status_code == HTTPStatus.BAD_GATEWAY
+    assert response.json() == {"detail": "Reply didn't fit Rubric"}

@@ -5,6 +5,7 @@ description = "Local server for Feynman: holds the API keys and runs the session
 requires-python = ">=3.14"
 dependencies = [
     "fastapi[standard]>=0.143.0",
+    "google-genai>=2.29.0",
     "pydantic-settings>=2.15.0",
 ]
 

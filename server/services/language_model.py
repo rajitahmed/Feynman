@@ -9,3 +9,7 @@ class LanguageModel(Protocol):
     ) -> ReplyShape:
         """Answer the prompt with structured output parsed into reply_shape."""
         ...
+
+
+class InvalidReplyError(Exception):
+    """The language model answered, but not in the shape that was asked for."""
