@@ -128,8 +128,9 @@ Everything important we decided while planning, with the reason. Last updated Oc
 | 59 | **Revised:** **Ruff** formats and checks the Python in one tool. Prettier and ESLint handle the TypeScript. | Style is never a debate, and one Python tool is simpler than two. |
 | 60 | No dead code, no duplicated logic, no speculative features, no state library, CSS framework, or frontend test suite. | KISS, DRY and YAGNI. |
 | 61 | Every slice ends with the "could I replicate this?" check: explain it back, rewrite one function from its name, check the names, check for duplicates and extras, and run the tests. | Turns the readability goal into a repeatable habit. |
-| 62 | **Revised:** paste a short code-rules block into the AI assistant at the start of every session. It now covers both Python and TypeScript. | Keeps the AI's output in the team's style. The block is in the spec. |
+| 62 | **Revised:** paste a short code-rules block into the AI assistant at the start of every session. It now covers both Python and TypeScript. | Keeps the AI's output in the team's style. The block is in `docs/AI_RULES.md`. |
 | 63 | Add a short readability pass before demo prep: read everything once and rename, delete, merge and split as needed. | Catches drift that builds up during a fast build. |
+| 64 | Keep React at setup (ticket #1); the plain TypeScript fallback is not taken. | The Vite React scaffold was simple enough, and every frontend ticket explains its components as they are written. |
 
 ## Out of scope
 
@@ -139,4 +140,3 @@ Selectable kid levels, adaptive difficulty, interrupting or streaming audio, pro
 
 - Avatar style (drawn or generated) and four mood images.
 - Whether the testing approach (#51) is what the team wants.
-- Whether React feels manageable once setup starts. The fallback is plain TypeScript with HTML and CSS; the Python server is unchanged.

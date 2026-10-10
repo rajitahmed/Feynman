@@ -1,0 +1,26 @@
+[project]
+name = "feynman-server"
+version = "0.1.0"
+description = "Local server for Feynman: holds the API keys and runs the session logic."
+requires-python = ">=3.14"
+dependencies = [
+    "fastapi[standard]>=0.143.0",
+    "pydantic-settings>=2.15.0",
+]
+
+[dependency-groups]
+dev = [
+    "httpx2>=2.13.1",
+    "pytest>=9.1.1",
+    "ruff>=0.17.0",
+]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+# Defaults plus import sorting, naming, modern syntax, likely bugs, and type-hint checks.
+select = ["E", "F", "I", "N", "UP", "B", "ANN"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]

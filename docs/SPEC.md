@@ -67,22 +67,7 @@ Before any slice counts as done, both teammates confirm all of these:
 
 ### Rules to paste into your AI assistant
 
-Paste this block at the start of every AI coding session, and again if the output drifts:
-
-```
-This project has a Python server (FastAPI, Pydantic) and a React + TypeScript frontend.
-Python: type hints on every function, no `Any`, data shapes as Pydantic models, snake_case names.
-TypeScript: strict mode, no `any`, camelCase names, PascalCase components, plain CSS, built-in React state only.
-Follow clean code, KISS, DRY, YAGNI and SOLID, but when they conflict, prefer KISS and YAGNI.
-Use full-word, descriptive names. No abbreviations, no single-letter variables, no magic numbers (use named constants).
-Functions are small, do one thing, and are named as verbs. Booleans start with is/has/should.
-One main thing per file, and the file name matches it.
-Keep external services (Gemini, ElevenLabs) behind small interfaces so they can be faked in tests.
-Do not add features, options, libraries, or abstractions that were not asked for.
-No clever one-liners. Prefer plain, readable code that a beginner can follow.
-Comments explain why, not what.
-After writing code, briefly explain it so I can explain it back.
-```
+The block to paste at the start of every AI coding session lives in [AI_RULES.md](AI_RULES.md).
 
 ## User Stories
 
