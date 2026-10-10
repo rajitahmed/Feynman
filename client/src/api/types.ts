@@ -65,3 +65,12 @@ export type StartSessionRequest = {
 export type StartSessionReply = {
   kid_question: string;
 };
+
+export type SubmitTurnRequest = {
+  answer_text: string;
+};
+
+export type SubmitTurnReply = {
+  kid_reply_text: string;
+  round_number: number;
+};

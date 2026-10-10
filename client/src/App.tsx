@@ -1,5 +1,6 @@
 import { useState } from "react";
 import NotesScreen from "./screens/NotesScreen.tsx";
+import SessionScreen from "./screens/SessionScreen.tsx";
 
 function App() {
   const [kidQuestion, setKidQuestion] = useState("");
@@ -8,12 +9,7 @@ function App() {
     return <NotesScreen onSessionStarted={setKidQuestion} />;
   }
 
-  // ponytail: placeholder until the session screen lands (#4).
-  return (
-    <main>
-      <p>{kidQuestion}</p>
-    </main>
-  );
+  return <SessionScreen firstKidQuestion={kidQuestion} />;
 }
 
 export default App;

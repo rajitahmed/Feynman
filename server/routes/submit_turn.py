@@ -1,0 +1,21 @@
+from typing import Annotated
+
+from fastapi import APIRouter, Depends, HTTPException, status
+
+from models.submit_turn import SubmitTurnReply, SubmitTurnRequest
+from services.get_language_model import get_language_model
+from services.language_model import LanguageModel
+from session.session_store import session_store
+from session.take_turn import take_turn
+
+router = APIRouter()
+
+
+@router.post("/session/turn")
+def submit_turn(
+    request: SubmitTurnRequest,
+    language_model: Annotated[LanguageModel, Depends(get_language_model)],
+) -> SubmitTurnReply:
+    if session_store.current_session is None:
+        raise HTTPException(status.HTTP_409_CONFLICT, "Start a session before answering")
+    return take_turn(session_store.current_session, request.answer_text, language_model)
