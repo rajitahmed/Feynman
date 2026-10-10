@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { KID_NAME } from "./kidName.ts";
 import "./Transcript.css";
 
-export type Speaker = "kid" | "you";
+type Speaker = "kid" | "you";
 
 export type TranscriptLine = {
   speaker: Speaker;
@@ -30,8 +30,8 @@ function Transcript({ lines }: TranscriptProps) {
   }, [lines]);
 
   return (
-    <section className="transcript">
-      <h2 className="transcript__label">Transcript</h2>
+    <section className="card transcript">
+      <h2 className="card-label transcript__label">Transcript</h2>
       <ol className="transcript__lines" aria-live="polite" ref={linesListRef}>
         {lines.map((line, lineIndex) => (
           // Lines are only ever appended, so their position is a stable key.

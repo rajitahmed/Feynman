@@ -67,13 +67,13 @@ function NotesScreen({ onSessionStarted }: NotesScreenProps) {
     <main className="notes-screen">
       {kidGreeting && <SpeechBubble>{kidGreeting}</SpeechBubble>}
       <KidAvatar mood="listening" />
-      <form className="notes-screen__card" onSubmit={submitNotes}>
-        <label className="notes-screen__label" htmlFor="notes">
+      <form className="card notes-screen__card" onSubmit={submitNotes}>
+        <label className="card-label notes-screen__label" htmlFor="notes">
           Your notes
         </label>
         <textarea
           id="notes"
-          className="notes-screen__notes"
+          className="text-field notes-screen__notes"
           rows={NOTES_BOX_LINES}
           placeholder="Paste your study notes here..."
           value={notes}

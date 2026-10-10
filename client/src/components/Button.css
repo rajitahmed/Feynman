@@ -2,7 +2,7 @@
   --button-color: var(--color-green);
   --button-edge-color: var(--color-green-edge);
   font: 800 var(--font-size-large) var(--font-family);
-  color: white;
+  color: var(--color-text-inverse);
   background: var(--button-color);
   border: none;
   border-radius: var(--radius-button);

@@ -1,9 +1,9 @@
 from enum import StrEnum
-from typing import Annotated, Self
+from typing import Self
 
-from pydantic import Base64Bytes, BaseModel, StringConstraints, model_validator
+from pydantic import Base64Bytes, BaseModel, model_validator
 
-NonBlankText = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
+from models.non_blank_text import NonBlankText
 
 
 class SubmitTurnRequest(BaseModel):

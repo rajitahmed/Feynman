@@ -1,47 +1,11 @@
-// Hand-mirrored from the Pydantic models in server/models/. Field names stay snake_case
-// so the JSON needs no converting. Change both sides together.
+// Hand-mirrored from the Pydantic models in server/models/, only the ones the browser sends or
+// receives. Field names stay snake_case so the JSON needs no converting. Change both sides together.
 
 export type RoundType = "what" | "how" | "why" | "example";
-
-export type Round = {
-  round_type: RoundType;
-  kid_question: string;
-  key_points: string[];
-};
-
-export type Rubric = {
-  rounds: Round[];
-};
-
-export type Decision = "move_on" | "follow_up";
 
 export type ParrotingMatch = {
   user_phrase: string;
   note_line: string;
-};
-
-export type Judgment = {
-  covered_key_points: string[];
-  parroting: ParrotingMatch | null;
-  decision: Decision;
-  kid_reply_text: string;
-};
-
-export type JudgedAnswer = {
-  round_number: number;
-  answer_text: string;
-  judgment: Judgment;
-};
-
-export type Session = {
-  notes: string;
-  rubric: Rubric;
-  current_round_number: number;
-  follow_up_count: number;
-  is_finished: boolean;
-  covered_key_points: string[];
-  judged_answers: JudgedAnswer[];
-  fuzzy_round_numbers: number[];
 };
 
 export type RoundStatus = "covered" | "partly_covered" | "fuzzy";

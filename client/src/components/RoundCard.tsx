@@ -8,8 +8,10 @@ type RoundCardProps = {
 
 function RoundCard({ roundCard }: RoundCardProps) {
   return (
-    <article className="round-card">
-      <p className="round-card__label">Round {roundCard.round_number}</p>
+    <article className="card round-card">
+      <p className="card-label round-card__label">
+        Round {roundCard.round_number}
+      </p>
       <h3 className="round-card__type">{roundCard.round_type}</h3>
       <StatusPill status={roundCard.status} />
       <ul className="round-card__bullets">

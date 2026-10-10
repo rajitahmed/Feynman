@@ -1,10 +1,10 @@
-from typing import Annotated
+from pydantic import BaseModel
 
-from pydantic import BaseModel, StringConstraints
+from models.non_blank_text import NonBlankText
 
 
 class StartSessionRequest(BaseModel):
-    notes: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
+    notes: NonBlankText
 
 
 class StartSessionReply(BaseModel):

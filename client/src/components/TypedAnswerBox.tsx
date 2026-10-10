@@ -22,7 +22,7 @@ function TypedAnswerBox({ isDisabled, onSend }: TypedAnswerBoxProps) {
   return (
     <form className="typed-answer-box" onSubmit={sendAnswer}>
       <input
-        className="typed-answer-box__input"
+        className="text-field typed-answer-box__input"
         aria-label="Your answer"
         placeholder="Type your answer..."
         value={answerText}

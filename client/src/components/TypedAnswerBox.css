@@ -8,12 +8,4 @@
 
 .typed-answer-box__input {
   flex: 1;
-  padding: var(--space-3);
-  font: inherit;
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-button);
-}
-
-.typed-answer-box__input:focus {
-  border-color: var(--color-blue);
 }

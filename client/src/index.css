@@ -9,6 +9,32 @@ body {
   background: var(--color-page);
 }
 
+/* Several screens share these looks; one copy keeps them from drifting apart. */
+.card {
+  background: var(--color-card);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-card);
+}
+
+.card-label {
+  font-size: var(--font-size-label);
+  font-weight: 700;
+  letter-spacing: var(--letter-spacing-label);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.text-field {
+  padding: var(--space-3);
+  font: inherit;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-button);
+}
+
+.text-field:focus {
+  border-color: var(--color-blue);
+}
+
 :focus-visible {
   outline: 3px solid var(--color-blue);
   outline-offset: 2px;

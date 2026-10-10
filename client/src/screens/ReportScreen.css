@@ -9,9 +9,6 @@
 
 .report-screen__card {
   padding: var(--space-6);
-  background: var(--color-card);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-card);
 }
 
 .report-screen__title {
@@ -27,11 +24,6 @@
 
 .report-screen__label {
   margin: 0 0 var(--space-3);
-  font-size: var(--font-size-label);
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
 }
 
 .report-screen__round-cards {

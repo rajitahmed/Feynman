@@ -10,7 +10,7 @@
   width: var(--self-tile-width);
   height: var(--self-tile-height);
   font-weight: 800;
-  color: var(--color-card);
+  color: var(--color-text-inverse);
   background: var(--color-avatar-dark);
   border-radius: var(--radius-button);
 }

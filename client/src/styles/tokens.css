@@ -22,6 +22,7 @@
   --color-border: #e6e4de;
   --color-text: #2f3140;
   --color-text-muted: #6d6f7b;
+  --color-text-inverse: #ffffff; /* on colored buttons and dark tags */
 
   /* Round status colors (the report and the round tracker) */
   --color-status-covered: var(--color-green);
@@ -35,6 +36,7 @@
   /* Type */
   --font-family: "Nunito", system-ui, sans-serif;
   --font-size-label: 0.8rem; /* UPPERCASE labels */
+  --letter-spacing-label: 0.06em;
   --font-size-body: 1rem;
   --font-size-large: 1.25rem;
   --font-size-title: 1.75rem;
