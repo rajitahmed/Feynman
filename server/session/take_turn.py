@@ -27,7 +27,7 @@ def take_turn(
     if judgment.decision == Decision.FOLLOW_UP:
         if session.follow_up_count < MAX_FOLLOW_UPS_PER_ROUND:
             session.follow_up_count += 1
-            return build_reply(session, kid_reply_text, kid_mood, text_to_speech)
+            return build_reply(session, answer_text, kid_reply_text, kid_mood, text_to_speech)
         session.fuzzy_round_numbers.append(session.current_round_number)
         kid_reply_text = FUZZY_KID_LINE
     if session.current_round_number == len(session.rubric.rounds):
@@ -35,13 +35,18 @@ def take_turn(
     else:
         advance_round(session)
         kid_reply_text += f" {find_current_round(session).kid_question}"
-    return build_reply(session, kid_reply_text, kid_mood, text_to_speech)
+    return build_reply(session, answer_text, kid_reply_text, kid_mood, text_to_speech)
 
 
 def build_reply(
-    session: Session, kid_reply_text: str, kid_mood: KidMood, text_to_speech: TextToSpeech
+    session: Session,
+    answer_text: str,
+    kid_reply_text: str,
+    kid_mood: KidMood,
+    text_to_speech: TextToSpeech,
 ) -> SubmitTurnReply:
     return SubmitTurnReply(
+        answer_text=answer_text,
         kid_reply_text=kid_reply_text,
         round_number=session.current_round_number,
         is_session_finished=session.is_finished,

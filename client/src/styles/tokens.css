@@ -60,4 +60,5 @@
   --duration-fast: 120ms;
   --duration-normal: 250ms;
   --sprite-frame-duration: 110ms;
+  --duration-pulse: 1.2s; /* the listening ring and the recording mic */
 }

@@ -70,11 +70,12 @@ export type StartSessionReply = {
   kid_audio_base64: string;
 };
 
-export type SubmitTurnRequest = {
-  answer_text: string;
-};
+// One answer per turn: typed text, or a recording the server transcribes.
+export type SubmitTurnRequest =
+  { answer_text: string } | { answer_audio_base64: string };
 
 export type SubmitTurnReply = {
+  answer_text: string;
   kid_reply_text: string;
   round_number: number;
   is_session_finished: boolean;

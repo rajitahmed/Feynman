@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { getReport, submitTurn } from "../api/server.ts";
-import type { GapReport } from "../api/types.ts";
+import type { GapReport, SubmitTurnRequest } from "../api/types.ts";
 import KidTile from "../components/KidTile.tsx";
 import type { KidMood } from "../components/kidMood.ts";
 import { KID_NAME } from "../components/kidName.ts";
+import MicButton from "../components/MicButton.tsx";
 import RoundTracker from "../components/RoundTracker.tsx";
 import Transcript, { type TranscriptLine } from "../components/Transcript.tsx";
 import TypedAnswerBox from "../components/TypedAnswerBox.tsx";
@@ -36,16 +37,18 @@ function SessionScreen({
   const [kidAudioBase64, setKidAudioBase64] = useState(firstKidAudioBase64);
   const [isKidTalking, setIsKidTalking] = useState(false);
 
-  async function sendAnswer(answerText: string): Promise<boolean> {
+  // Typed and spoken answers share this one turn flow; only the request differs.
+  async function sendAnswer(request: SubmitTurnRequest): Promise<boolean> {
     const moodBeforeAnswer = kidMood;
     setKidMood("thinking");
     setErrorMessage("");
     try {
-      const reply = await submitTurn({ answer_text: answerText });
+      const reply = await submitTurn(request);
       // Both lines are added only on success, so a failed send never leaves a stray line.
       setTranscriptLines((previousLines) => [
         ...previousLines,
-        { speaker: "you", text: answerText },
+        // The server's transcript, so the learner sees what the app heard.
+        { speaker: "you", text: reply.answer_text },
         { speaker: "kid", text: reply.kid_reply_text },
       ]);
       setKidAudioBase64(reply.kid_audio_base64);
@@ -76,8 +79,19 @@ function SessionScreen({
     }
   }
 
-  const isKidThinking = kidMood === "thinking";
-  const isKidBusy = isKidThinking || isKidTalking;
+  function showMicError(error: unknown) {
+    setErrorMessage(`Could not use the mic, try typing: ${String(error)}`);
+  }
+
+  // Null while the kid waits for an answer; the mic shows it as its disabled label.
+  function describeKidStatus(): string | null {
+    if (kidMood === "thinking") {
+      return `${KID_NAME} is thinking…`;
+    }
+    return isKidTalking ? `${KID_NAME} is talking…` : null;
+  }
+
+  const kidStatus = describeKidStatus();
   const latestKidLine = transcriptLines.findLast(
     (line) => line.speaker === "kid",
   );
@@ -103,15 +117,26 @@ function SessionScreen({
         <Transcript lines={transcriptLines} />
       </div>
       <footer className="session-screen__control-bar">
-        {isKidThinking && <p role="status">{KID_NAME} is thinking…</p>}
-        {isKidTalking && <p role="status">{KID_NAME} is talking…</p>}
         {errorMessage && <p role="alert">{errorMessage}</p>}
         {isSessionFinished ? (
           <p role="status">
             That's all {roundCount} rounds. Writing your report…
           </p>
         ) : (
-          <TypedAnswerBox isDisabled={isKidBusy} onSend={sendAnswer} />
+          <>
+            <MicButton
+              waitingLabel={kidStatus}
+              onRecorded={(audioBase64) =>
+                void sendAnswer({ answer_audio_base64: audioBase64 })
+              }
+              onMicError={showMicError}
+            />
+            {/* Always visible, so typing still works if the mic or the room fails. */}
+            <TypedAnswerBox
+              isDisabled={kidStatus !== null}
+              onSend={(answerText) => sendAnswer({ answer_text: answerText })}
+            />
+          </>
         )}
       </footer>
     </main>

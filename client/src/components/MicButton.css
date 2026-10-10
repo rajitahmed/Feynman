@@ -1,0 +1,29 @@
+.mic-button {
+  --button-color: var(--color-blue);
+  --button-edge-color: var(--color-blue-edge);
+  --pulse-ring-width: var(--space-2);
+}
+
+.mic-button--recording {
+  --button-color: var(--color-red);
+  --button-edge-color: var(--color-red-edge);
+  animation: pulse-recording-ring var(--duration-pulse) ease-out infinite;
+}
+
+/* The ring rides on the outline, because box-shadow already draws the chunky edge. */
+@keyframes pulse-recording-ring {
+  from {
+    outline: 0 solid var(--color-red);
+    outline-offset: 0;
+  }
+  to {
+    outline: var(--pulse-ring-width) solid transparent;
+    outline-offset: var(--pulse-ring-width);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mic-button--recording {
+    animation: none;
+  }
+}
