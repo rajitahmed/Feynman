@@ -67,6 +67,7 @@ export type StartSessionRequest = {
 export type StartSessionReply = {
   kid_question: string;
   round_count: number;
+  kid_audio_base64: string;
 };
 
 export type SubmitTurnRequest = {
@@ -78,6 +79,7 @@ export type SubmitTurnReply = {
   round_number: number;
   is_session_finished: boolean;
   kid_mood: "confused" | "got_it";
+  kid_audio_base64: string;
 };
 
 export type KidGreeting = {

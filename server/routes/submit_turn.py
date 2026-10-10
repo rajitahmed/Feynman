@@ -4,7 +4,9 @@ from fastapi import APIRouter, Depends, HTTPException, status
 
 from models.submit_turn import SubmitTurnReply, SubmitTurnRequest
 from services.get_language_model import get_language_model
+from services.get_text_to_speech import get_text_to_speech
 from services.language_model import LanguageModel
+from services.text_to_speech import TextToSpeech
 from session.session_store import session_store
 from session.take_turn import take_turn
 
@@ -15,9 +17,12 @@ router = APIRouter()
 def submit_turn(
     request: SubmitTurnRequest,
     language_model: Annotated[LanguageModel, Depends(get_language_model)],
+    text_to_speech: Annotated[TextToSpeech, Depends(get_text_to_speech)],
 ) -> SubmitTurnReply:
     if session_store.current_session is None:
         raise HTTPException(status.HTTP_409_CONFLICT, "Start a session before answering")
     if session_store.current_session.is_finished:
         raise HTTPException(status.HTTP_409_CONFLICT, "This session is finished")
-    return take_turn(session_store.current_session, request.answer_text, language_model)
+    return take_turn(
+        session_store.current_session, request.answer_text, language_model, text_to_speech
+    )

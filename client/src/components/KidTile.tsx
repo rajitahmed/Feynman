@@ -7,12 +7,17 @@ import "./KidTile.css";
 
 type KidTileProps = {
   mood: KidMood;
+  isTalking: boolean;
   latestKidLine: string;
 };
 
-function KidTile({ mood, latestKidLine }: KidTileProps) {
+function KidTile({ mood, isTalking, latestKidLine }: KidTileProps) {
+  const talkingClass = isTalking ? "kid-tile--talking" : "";
   return (
-    <section className={`kid-tile kid-tile--${mood}`} aria-label="Call">
+    <section
+      className={`kid-tile kid-tile--${mood} ${talkingClass}`}
+      aria-label="Call"
+    >
       <SpeechBubble>
         {mood === "thinking" ? (
           <span className="kid-tile__thinking-dots" aria-hidden="true">

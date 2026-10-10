@@ -20,3 +20,4 @@ class SubmitTurnReply(BaseModel):
     round_number: int
     is_session_finished: bool
     kid_mood: KidMood
+    kid_audio_base64: str

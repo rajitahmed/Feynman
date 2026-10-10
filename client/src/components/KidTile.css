@@ -17,6 +17,11 @@
   box-shadow: 0 0 0 var(--overlay-ring-width) var(--color-blue);
 }
 
+/* Active speaker border, like a video call's, while the kid's audio plays. */
+.kid-tile--talking {
+  box-shadow: 0 0 0 var(--overlay-ring-width) var(--color-yellow);
+}
+
 .kid-tile__thinking-dots {
   letter-spacing: 0.2em;
 }

@@ -20,6 +20,7 @@ function App() {
   return (
     <SessionScreen
       firstKidQuestion={startedSession.kid_question}
+      firstKidAudioBase64={startedSession.kid_audio_base64}
       roundCount={startedSession.round_count}
       onReportReady={setReport}
     />

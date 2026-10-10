@@ -4,6 +4,8 @@ from models.round import Round
 from models.session import JudgedAnswer, Session
 from models.submit_turn import KidMood, SubmitTurnReply
 from services.language_model import LanguageModel
+from services.speak_as_base64 import speak_as_base64
+from services.text_to_speech import TextToSpeech
 
 # The server enforces the cap, not the language model, so the learner can never get stuck.
 MAX_FOLLOW_UPS_PER_ROUND = 2
@@ -12,7 +14,12 @@ FUZZY_KID_LINE = "I'm still a bit fuzzy on that, but let's try the next part!"
 KID_MOOD_BY_DECISION = {Decision.FOLLOW_UP: KidMood.CONFUSED, Decision.MOVE_ON: KidMood.GOT_IT}
 
 
-def take_turn(session: Session, answer_text: str, language_model: LanguageModel) -> SubmitTurnReply:
+def take_turn(
+    session: Session,
+    answer_text: str,
+    language_model: LanguageModel,
+    text_to_speech: TextToSpeech,
+) -> SubmitTurnReply:
     judgment = judge_answer(session.notes, find_current_round(session), answer_text, language_model)
     record_judged_answer(session, answer_text, judgment)
     kid_mood = KID_MOOD_BY_DECISION[judgment.decision]
@@ -20,7 +27,7 @@ def take_turn(session: Session, answer_text: str, language_model: LanguageModel)
     if judgment.decision == Decision.FOLLOW_UP:
         if session.follow_up_count < MAX_FOLLOW_UPS_PER_ROUND:
             session.follow_up_count += 1
-            return build_reply(session, kid_reply_text, kid_mood)
+            return build_reply(session, kid_reply_text, kid_mood, text_to_speech)
         session.fuzzy_round_numbers.append(session.current_round_number)
         kid_reply_text = FUZZY_KID_LINE
     if session.current_round_number == len(session.rubric.rounds):
@@ -28,15 +35,18 @@ def take_turn(session: Session, answer_text: str, language_model: LanguageModel)
     else:
         advance_round(session)
         kid_reply_text += f" {find_current_round(session).kid_question}"
-    return build_reply(session, kid_reply_text, kid_mood)
+    return build_reply(session, kid_reply_text, kid_mood, text_to_speech)
 
 
-def build_reply(session: Session, kid_reply_text: str, kid_mood: KidMood) -> SubmitTurnReply:
+def build_reply(
+    session: Session, kid_reply_text: str, kid_mood: KidMood, text_to_speech: TextToSpeech
+) -> SubmitTurnReply:
     return SubmitTurnReply(
         kid_reply_text=kid_reply_text,
         round_number=session.current_round_number,
         is_session_finished=session.is_finished,
         kid_mood=kid_mood,
+        kid_audio_base64=speak_as_base64(kid_reply_text, text_to_speech),
     )
 
 

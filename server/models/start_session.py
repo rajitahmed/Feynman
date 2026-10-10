@@ -10,3 +10,4 @@ class StartSessionRequest(BaseModel):
 class StartSessionReply(BaseModel):
     kid_question: str
     round_count: int
+    kid_audio_base64: str

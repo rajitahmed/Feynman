@@ -1,3 +1,4 @@
+import base64
 from http import HTTPStatus
 
 import pytest
@@ -7,7 +8,9 @@ from main import app
 from models.judgment import Decision, Judgment
 from services.canned_rubric import CANNED_RUBRIC
 from services.fake_language_model import FakeLanguageModel
+from services.fake_text_to_speech import PLACEHOLDER_CLIP, FakeTextToSpeech
 from services.get_language_model import get_language_model
+from services.get_text_to_speech import get_text_to_speech
 from session.session_store import session_store
 from session.take_turn import FUZZY_KID_LINE, MAX_FOLLOW_UPS_PER_ROUND
 
@@ -34,6 +37,8 @@ PARTLY_COVERED_JUDGMENT = Judgment(
     kid_reply_text="Okay, but why does it use itself?",
 )
 
+PLACEHOLDER_CLIP_BASE64 = base64.b64encode(PLACEHOLDER_CLIP).decode("ascii")
+
 client = TestClient(app)
 
 
@@ -57,6 +62,7 @@ def test_moves_to_next_round_and_asks_its_question_when_judge_says_move_on(
         "round_number": 2,
         "is_session_finished": False,
         "kid_mood": "got_it",
+        "kid_audio_base64": PLACEHOLDER_CLIP_BASE64,
     }
 
 
@@ -73,6 +79,7 @@ def test_stays_on_round_and_counts_the_follow_up_when_judge_says_follow_up(
         "round_number": 1,
         "is_session_finished": False,
         "kid_mood": "confused",
+        "kid_audio_base64": PLACEHOLDER_CLIP_BASE64,
     }
     assert second_response.json()["round_number"] == 1
     assert session_store.current_session is not None
@@ -94,6 +101,7 @@ def test_marks_round_fuzzy_and_moves_on_when_follow_ups_pass_the_cap(
         "round_number": 2,
         "is_session_finished": False,
         "kid_mood": "confused",
+        "kid_audio_base64": PLACEHOLDER_CLIP_BASE64,
     }
     assert session_store.current_session is not None
     assert session_store.current_session.fuzzy_round_numbers == [1]
@@ -112,8 +120,19 @@ def test_finishes_the_session_after_the_last_round(monkeypatch: pytest.MonkeyPat
         "round_number": len(CANNED_RUBRIC.rounds),
         "is_session_finished": True,
         "kid_mood": "got_it",
+        "kid_audio_base64": PLACEHOLDER_CLIP_BASE64,
     }
     assert late_response.status_code == HTTPStatus.CONFLICT
+
+
+def test_speaks_the_kid_reply_it_returns(monkeypatch: pytest.MonkeyPatch) -> None:
+    start_session_with_judgment(FOLLOW_UP_JUDGMENT, monkeypatch)
+    fake_text_to_speech = FakeTextToSpeech()
+    monkeypatch.setitem(app.dependency_overrides, get_text_to_speech, lambda: fake_text_to_speech)
+
+    client.post("/session/turn", json={"answer_text": ANSWER_TEXT})
+
+    assert fake_text_to_speech.spoken_texts == [FOLLOW_UP_JUDGMENT.kid_reply_text]
 
 
 def test_records_a_key_point_once_when_two_answers_cover_it(
