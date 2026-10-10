@@ -18,4 +18,6 @@ def submit_turn(
 ) -> SubmitTurnReply:
     if session_store.current_session is None:
         raise HTTPException(status.HTTP_409_CONFLICT, "Start a session before answering")
+    if session_store.current_session.is_finished:
+        raise HTTPException(status.HTTP_409_CONFLICT, "This session is finished")
     return take_turn(session_store.current_session, request.answer_text, language_model)

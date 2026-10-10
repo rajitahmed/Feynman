@@ -9,6 +9,7 @@ from services.canned_rubric import CANNED_RUBRIC
 from services.fake_language_model import FakeLanguageModel
 from services.get_language_model import get_language_model
 from session.session_store import session_store
+from session.take_turn import FUZZY_KID_LINE, MAX_FOLLOW_UPS_PER_ROUND
 
 RECURSION_NOTES = "Recursion is when a function calls itself until it reaches a base case."
 ANSWER_TEXT = "It's when a function uses itself to solve a smaller piece of the problem."
@@ -54,6 +55,7 @@ def test_moves_to_next_round_and_asks_its_question_when_judge_says_move_on(
     assert response.json() == {
         "kid_reply_text": f"{MOVE_ON_JUDGMENT.kid_reply_text} {next_kid_question}",
         "round_number": 2,
+        "is_session_finished": False,
     }
 
 
@@ -68,10 +70,46 @@ def test_stays_on_round_and_counts_the_follow_up_when_judge_says_follow_up(
     assert first_response.json() == {
         "kid_reply_text": FOLLOW_UP_JUDGMENT.kid_reply_text,
         "round_number": 1,
+        "is_session_finished": False,
     }
     assert second_response.json()["round_number"] == 1
     assert session_store.current_session is not None
     assert session_store.current_session.follow_up_count == 2
+
+
+def test_marks_round_fuzzy_and_moves_on_when_follow_ups_pass_the_cap(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    start_session_with_judgment(FOLLOW_UP_JUDGMENT, monkeypatch)
+
+    for _ in range(MAX_FOLLOW_UPS_PER_ROUND):
+        client.post("/session/turn", json={"answer_text": ANSWER_TEXT})
+    response = client.post("/session/turn", json={"answer_text": ANSWER_TEXT})
+
+    next_kid_question = CANNED_RUBRIC.rounds[1].kid_question
+    assert response.json() == {
+        "kid_reply_text": f"{FUZZY_KID_LINE} {next_kid_question}",
+        "round_number": 2,
+        "is_session_finished": False,
+    }
+    assert session_store.current_session is not None
+    assert session_store.current_session.fuzzy_round_numbers == [1]
+
+
+def test_finishes_the_session_after_the_last_round(monkeypatch: pytest.MonkeyPatch) -> None:
+    start_session_with_judgment(MOVE_ON_JUDGMENT, monkeypatch)
+
+    for _ in range(len(CANNED_RUBRIC.rounds) - 1):
+        client.post("/session/turn", json={"answer_text": ANSWER_TEXT})
+    last_response = client.post("/session/turn", json={"answer_text": ANSWER_TEXT})
+    late_response = client.post("/session/turn", json={"answer_text": ANSWER_TEXT})
+
+    assert last_response.json() == {
+        "kid_reply_text": MOVE_ON_JUDGMENT.kid_reply_text,
+        "round_number": len(CANNED_RUBRIC.rounds),
+        "is_session_finished": True,
+    }
+    assert late_response.status_code == HTTPStatus.CONFLICT
 
 
 def test_records_a_key_point_once_when_two_answers_cover_it(

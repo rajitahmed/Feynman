@@ -38,8 +38,10 @@ export type Session = {
   rubric: Rubric;
   current_round_number: number;
   follow_up_count: number;
+  is_finished: boolean;
   covered_key_points: string[];
   judged_answers: JudgedAnswer[];
+  fuzzy_round_numbers: number[];
 };
 
 export type RoundStatus = "covered" | "partly_covered" | "fuzzy";
@@ -74,4 +76,5 @@ export type SubmitTurnRequest = {
 export type SubmitTurnReply = {
   kid_reply_text: string;
   round_number: number;
+  is_session_finished: boolean;
 };

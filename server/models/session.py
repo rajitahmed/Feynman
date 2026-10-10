@@ -15,5 +15,7 @@ class Session(BaseModel):
     rubric: Rubric
     current_round_number: int = 1
     follow_up_count: int = 0
+    is_finished: bool = False
     covered_key_points: list[str] = []
     judged_answers: list[JudgedAnswer] = []
+    fuzzy_round_numbers: list[int] = []

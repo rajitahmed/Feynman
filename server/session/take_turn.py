@@ -5,19 +5,35 @@ from models.session import JudgedAnswer, Session
 from models.submit_turn import SubmitTurnReply
 from services.language_model import LanguageModel
 
+# The server enforces the cap, not the language model, so the learner can never get stuck.
+MAX_FOLLOW_UPS_PER_ROUND = 2
+FUZZY_KID_LINE = "I'm still a bit fuzzy on that, but let's try the next part!"
+
 
 def take_turn(session: Session, answer_text: str, language_model: LanguageModel) -> SubmitTurnReply:
     judgment = judge_answer(session.notes, find_current_round(session), answer_text, language_model)
     record_judged_answer(session, answer_text, judgment)
     kid_reply_text = judgment.kid_reply_text
-    if judgment.decision == Decision.MOVE_ON:
-        advance_round(session)
-        # ponytail: past round 4 there is no next question; the finished flag comes in #5.
-        if session.current_round_number <= len(session.rubric.rounds):
-            kid_reply_text += f" {find_current_round(session).kid_question}"
+    if judgment.decision == Decision.FOLLOW_UP:
+        if session.follow_up_count < MAX_FOLLOW_UPS_PER_ROUND:
+            session.follow_up_count += 1
+            return build_reply(session, kid_reply_text)
+        session.fuzzy_round_numbers.append(session.current_round_number)
+        kid_reply_text = FUZZY_KID_LINE
+    if session.current_round_number == len(session.rubric.rounds):
+        session.is_finished = True
     else:
-        session.follow_up_count += 1
-    return SubmitTurnReply(kid_reply_text=kid_reply_text, round_number=session.current_round_number)
+        advance_round(session)
+        kid_reply_text += f" {find_current_round(session).kid_question}"
+    return build_reply(session, kid_reply_text)
+
+
+def build_reply(session: Session, kid_reply_text: str) -> SubmitTurnReply:
+    return SubmitTurnReply(
+        kid_reply_text=kid_reply_text,
+        round_number=session.current_round_number,
+        is_session_finished=session.is_finished,
+    )
 
 
 def find_current_round(session: Session) -> Round:

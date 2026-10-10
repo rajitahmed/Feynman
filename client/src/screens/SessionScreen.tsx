@@ -19,6 +19,7 @@ function SessionScreen({ firstKidQuestion, roundCount }: SessionScreenProps) {
   const [roundNumber, setRoundNumber] = useState(FIRST_ROUND_NUMBER);
   const [isKidThinking, setIsKidThinking] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [isSessionFinished, setIsSessionFinished] = useState(false);
 
   async function sendAnswer(answerText: string): Promise<boolean> {
     setIsKidThinking(true);
@@ -32,6 +33,7 @@ function SessionScreen({ firstKidQuestion, roundCount }: SessionScreenProps) {
         { speaker: "kid", text: reply.kid_reply_text },
       ]);
       setRoundNumber(reply.round_number);
+      setIsSessionFinished(reply.is_session_finished);
       return true;
     } catch (error) {
       setErrorMessage(`Could not send your answer: ${String(error)}`);
@@ -47,7 +49,11 @@ function SessionScreen({ firstKidQuestion, roundCount }: SessionScreenProps) {
       <Transcript lines={transcriptLines} />
       {isKidThinking && <p role="status">The kid is thinking…</p>}
       {errorMessage && <p role="alert">{errorMessage}</p>}
-      <TypedAnswerBox isDisabled={isKidThinking} onSend={sendAnswer} />
+      {isSessionFinished ? (
+        <p role="status">That's all {roundCount} rounds. Nice work!</p>
+      ) : (
+        <TypedAnswerBox isDisabled={isKidThinking} onSend={sendAnswer} />
+      )}
     </main>
   );
 }

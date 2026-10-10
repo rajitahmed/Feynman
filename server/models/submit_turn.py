@@ -10,3 +10,4 @@ class SubmitTurnRequest(BaseModel):
 class SubmitTurnReply(BaseModel):
     kid_reply_text: str
     round_number: int
+    is_session_finished: bool
