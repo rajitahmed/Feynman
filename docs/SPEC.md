@@ -268,7 +268,24 @@ Build thin slices that always run: logic first, then voice, then polish. **Every
 | 3 | What is it for? | Two weak answers | Fuzzy after the 1 follow-up cap |
 | 4 | Give an example | Read close to the notes | Parroting flag in the report |
 
-The less technical teammate is the learner on stage. Rehearse talking points (2-3 bullets per round), not scripts.
+The less technical teammate is the learner on stage. Rehearse talking points (2-3 bullets per round), not scripts. Paste [SAMPLE_NOTES.md](SAMPLE_NOTES.md) and click "Use demo rubric".
+
+**Talking points**
+
+1. **What is recursion?** (cover it first try)
+   - A function that calls itself.
+   - It solves a big problem by solving a smaller version of the same problem.
+   - It stops when it reaches the simplest case, the base case.
+2. **How does it relate to loops?** (vague, then fix)
+   - First answer: "It's like a loop that calls itself." Wait for the follow-up.
+   - Fix: both repeat steps; recursion repeats by calling itself instead of going back to the top.
+   - The base case is like the loop's stop condition, and each call gets a smaller input, like a counter.
+3. **What is it for?** (two weak answers)
+   - First answer: "It's used a lot in coding."
+   - After the follow-up: "It makes some programs work better." Stay vague; the kid says it's still fuzzy.
+4. **Give an example** (read close to the notes)
+   - Read the factorial lines nearly word for word: "factorial(n) = n × factorial(n - 1), base case: factorial(1) = 1."
+   - On the report, point at the parroting flag next to the matching note line.
 
 ## Out of Scope
 
