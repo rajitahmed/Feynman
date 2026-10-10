@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from config import Settings
+from models.health_check import HealthCheck
 
 
 @asynccontextmanager
@@ -18,5 +19,5 @@ app = FastAPI(title="Feynman", lifespan=load_settings_on_startup)
 
 
 @app.get("/health")
-def check_health() -> dict[str, str]:
-    return {"status": "ok"}
+def check_health() -> HealthCheck:
+    return HealthCheck(status="ok")
