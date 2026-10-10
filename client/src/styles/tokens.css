@@ -28,6 +28,10 @@
   --color-status-partly: var(--color-yellow);
   --color-status-fuzzy: #f08a7e; /* soft coral, never harsh red */
 
+  /* Report quote boxes: "You said" and "Your notes" */
+  --color-tint-blue: #e7f2fb;
+  --color-tint-yellow: #fef7e0;
+
   /* Type */
   --font-family: "Nunito", system-ui, sans-serif;
   --font-size-label: 0.8rem; /* UPPERCASE labels */

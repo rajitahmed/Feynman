@@ -1,0 +1,93 @@
+.report-screen {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  max-width: 880px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-4);
+}
+
+.report-screen__card {
+  padding: var(--space-6);
+  background: var(--color-card);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-card);
+}
+
+.report-screen__title {
+  margin: 0;
+  font-size: var(--font-size-title);
+  font-weight: 800;
+}
+
+.report-screen__muted {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.report-screen__label {
+  margin: 0 0 var(--space-3);
+  font-size: var(--font-size-label);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.report-screen__round-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-4);
+}
+
+@media (max-width: 900px) {
+  .report-screen__round-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* A hollow circle, never an X: a missed idea is something to practice, not a mistake. */
+.report-screen__missed-points {
+  margin: 0;
+  list-style: circle;
+}
+
+.report-screen__parroting {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+.report-screen__parroting + .report-screen__parroting {
+  margin-top: var(--space-4);
+}
+
+.report-screen__you-said,
+.report-screen__your-notes {
+  margin: 0;
+  padding: var(--space-4);
+  font-style: italic;
+  border-radius: var(--radius-button);
+}
+
+.report-screen__you-said {
+  background: var(--color-tint-blue);
+}
+
+.report-screen__your-notes {
+  background: var(--color-tint-yellow);
+}
+
+.report-screen__re-explain-prompts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  font-weight: 700;
+  list-style: none;
+}
+
+.report-screen__footer {
+  text-align: center;
+}

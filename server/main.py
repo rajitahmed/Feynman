@@ -5,6 +5,7 @@ from fastapi import FastAPI
 
 from config import Settings
 from models.health_check import HealthCheck
+from routes.get_report import router as get_report_router
 from routes.start_session import router as start_session_router
 from routes.submit_turn import router as submit_turn_router
 
@@ -20,6 +21,7 @@ async def load_settings_on_startup(app: FastAPI) -> AsyncIterator[None]:
 app = FastAPI(title="Feynman", lifespan=load_settings_on_startup)
 app.include_router(start_session_router)
 app.include_router(submit_turn_router)
+app.include_router(get_report_router)
 
 
 @app.get("/health")

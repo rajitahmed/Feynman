@@ -1,0 +1,21 @@
+.status-pill {
+  display: inline-flex;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--font-size-label);
+  font-weight: 800;
+  color: var(--color-text);
+  border-radius: var(--radius-pill);
+}
+
+.status-pill--covered {
+  background: var(--color-status-covered);
+}
+
+.status-pill--partly_covered {
+  background: var(--color-status-partly);
+}
+
+.status-pill--fuzzy {
+  background: var(--color-status-fuzzy);
+}

@@ -26,3 +26,9 @@ class GapReport(BaseModel):
     missed_key_points: list[str]
     parroting_flags: list[ParrotingMatch]
     re_explain_prompts: list[str]
+
+
+class ReExplainPrompts(BaseModel):
+    """The language model's only job in the report: one retry question per gap."""
+
+    prompts: list[str]

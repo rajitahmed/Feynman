@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { submitTurn } from "../api/server.ts";
+import { getReport, submitTurn } from "../api/server.ts";
+import type { GapReport } from "../api/types.ts";
 import RoundTracker from "../components/RoundTracker.tsx";
 import Transcript, { type TranscriptLine } from "../components/Transcript.tsx";
 import TypedAnswerBox from "../components/TypedAnswerBox.tsx";
@@ -10,9 +11,14 @@ const FIRST_ROUND_NUMBER = 1;
 type SessionScreenProps = {
   firstKidQuestion: string;
   roundCount: number;
+  onReportReady: (report: GapReport) => void;
 };
 
-function SessionScreen({ firstKidQuestion, roundCount }: SessionScreenProps) {
+function SessionScreen({
+  firstKidQuestion,
+  roundCount,
+  onReportReady,
+}: SessionScreenProps) {
   const [transcriptLines, setTranscriptLines] = useState<TranscriptLine[]>([
     { speaker: "kid", text: firstKidQuestion },
   ]);
@@ -34,12 +40,23 @@ function SessionScreen({ firstKidQuestion, roundCount }: SessionScreenProps) {
       ]);
       setRoundNumber(reply.round_number);
       setIsSessionFinished(reply.is_session_finished);
+      if (reply.is_session_finished) {
+        void loadReport();
+      }
       return true;
     } catch (error) {
       setErrorMessage(`Could not send your answer: ${String(error)}`);
       return false;
     } finally {
       setIsKidThinking(false);
+    }
+  }
+
+  async function loadReport() {
+    try {
+      onReportReady(await getReport());
+    } catch (error) {
+      setErrorMessage(`Could not load your report: ${String(error)}`);
     }
   }
 
@@ -50,7 +67,9 @@ function SessionScreen({ firstKidQuestion, roundCount }: SessionScreenProps) {
       {isKidThinking && <p role="status">The kid is thinking…</p>}
       {errorMessage && <p role="alert">{errorMessage}</p>}
       {isSessionFinished ? (
-        <p role="status">That's all {roundCount} rounds. Nice work!</p>
+        <p role="status">
+          That's all {roundCount} rounds. Writing your report…
+        </p>
       ) : (
         <TypedAnswerBox isDisabled={isKidThinking} onSend={sendAnswer} />
       )}
