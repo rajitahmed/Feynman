@@ -1,6 +1,6 @@
 # Feynman: Hackathon Spec
 
-Hack Knight, 48-hour hackathon. Two-person team (one stronger coder, one less technical). Spec written October 9, 2026. Revised October 10, 2026: stack changed to TypeScript end to end, and code readability made a first-class requirement.
+Hack Knight, 48-hour hackathon. Two-person team (one stronger coder, one less technical). Spec written October 9, 2026. Revised October 10, 2026: React + TypeScript frontend with a Python server, and code readability made a first-class requirement.
 
 ## Problem Statement
 
@@ -29,7 +29,7 @@ You talk with press-to-talk, and you can always type instead. A live transcript 
 | --- | --- |
 | **Clean / readable** | Code reads top to bottom like a short explanation. A teammate seeing a file for the first time can say what it does. |
 | **Composable** | Small pieces that plug together. Screens are built from small components; the server is built from small functions that each do one step. |
-| **S: Single responsibility** | Each file, function, and component has one job and one reason to change. If you need "and" to describe it, split it. |
+| **S: Single responsibility** | Each file, function, class, and component has one job and one reason to change. If you need "and" to describe it, split it. |
 | **O: Open/closed** | Add new behavior by adding something new, not by editing working code. For example, a new round type is a new entry in the round list, not a new `if` buried in the turn logic. |
 | **L: Liskov substitution** | The fake speech service used in tests must behave like the real one, so either can be plugged in without changing the code that uses it. |
 | **I: Interface segregation** | Interfaces stay tiny. The speech-to-text interface has one method; it doesn't also carry text-to-speech methods. |
@@ -42,16 +42,18 @@ You talk with press-to-talk, and you can always type instead. A live transcript 
 
 ### Naming and style rules
 
-- **Names are full words that say what a thing is.** Good: `coveredKeyPoints`, `followUpCount`, `kidReplyText`, `isRoundFuzzy`. Bad: `res`, `d`, `tmp`, `data2`, `handleIt`, `x`.
-- **No abbreviations** unless everyone knows them (`id`, `url`). `STT` and `TTS` are not obvious; use `speechToText` and `textToSpeech`.
-- **Functions are verbs** that say what they do: `planRounds`, `judgeAnswer`, `buildGapReport`. **Booleans start with `is`, `has`, or `should`.**
+These apply to both languages. Python uses `snake_case` for functions and variables, `PascalCase` for classes, and `UPPER_SNAKE_CASE` for constants. TypeScript uses `camelCase` for functions and variables, `PascalCase` for components and types.
+
+- **Names are full words that say what a thing is.** Good: `covered_key_points`, `follow_up_count`, `kid_reply_text`, `is_round_fuzzy` (Python) and `coveredKeyPoints`, `RoundTracker`, `isRecording` (TypeScript). Bad: `res`, `d`, `tmp`, `data2`, `handle_it`, `x`.
+- **No abbreviations** unless everyone knows them (`id`, `url`). `STT` and `TTS` are not obvious; use `speech_to_text` and `text_to_speech`.
+- **Functions are verbs** that say what they do: `plan_rounds`, `judge_answer`, `build_gap_report`. **Booleans start with `is`, `has`, or `should`.**
 - **No magic numbers or strings.** The follow-up cap is `MAX_FOLLOW_UPS_PER_ROUND = 2`, defined once and named. The fuzzy line the kid says is one named constant.
-- **File names match what they hold.** A file named `judgeAnswer.ts` exports `judgeAnswer`. One main thing per file.
+- **File names match what they hold.** A file named `judge_answer.py` contains `judge_answer`. One main thing per file.
 - **Small functions.** If a function doesn't fit on one screen, or needs a comment to explain its middle, split it into named steps.
-- **Types explain the data.** TypeScript runs in strict mode with no `any`. The types for the rubric, the judgment, and the report are written first and double as documentation.
+- **Types explain the data.** Every Python function has type hints on its inputs and outputs, with no `Any`. Data shapes are Pydantic models. The TypeScript side runs in strict mode with no `any`. The shapes for the rubric, the judgment, and the report are written first and double as documentation.
 - **Comments explain why, not what.** If a comment is needed to say what the code does, rename or restructure instead.
 - **No dead code.** Delete unused functions, files, and commented-out code.
-- **Same formatting everywhere.** Prettier formats on save and ESLint catches mistakes, so style is never a discussion.
+- **Same formatting everywhere.** Ruff formats and checks the Python, Prettier and ESLint handle the TypeScript, so style is never a discussion.
 
 ### The "could I replicate this?" check
 
@@ -68,13 +70,15 @@ Before any slice counts as done, both teammates confirm all of these:
 Paste this block at the start of every AI coding session, and again if the output drifts:
 
 ```
-Write TypeScript in strict mode with no `any`.
+This project has a Python server (FastAPI, Pydantic) and a React + TypeScript frontend.
+Python: type hints on every function, no `Any`, data shapes as Pydantic models, snake_case names.
+TypeScript: strict mode, no `any`, camelCase names, PascalCase components, plain CSS, built-in React state only.
 Follow clean code, KISS, DRY, YAGNI and SOLID, but when they conflict, prefer KISS and YAGNI.
 Use full-word, descriptive names. No abbreviations, no single-letter variables, no magic numbers (use named constants).
 Functions are small, do one thing, and are named as verbs. Booleans start with is/has/should.
-One main export per file, and the file name matches it.
+One main thing per file, and the file name matches it.
 Keep external services (Gemini, ElevenLabs) behind small interfaces so they can be faked in tests.
-Do not add features, options, or abstractions that were not asked for.
+Do not add features, options, libraries, or abstractions that were not asked for.
 No clever one-liners. Prefer plain, readable code that a beginner can follow.
 Comments explain why, not what.
 After writing code, briefly explain it so I can explain it back.
@@ -131,17 +135,17 @@ After writing code, briefly explain it so I can explain it back.
 33. As the team, we want every variable, function, and file named in full words that say what it is, so that either of us can read and rewrite it without help.
 34. As the team, we want small, single-purpose functions and components, so that each one fits on a screen and can be explained in one sentence.
 35. As the team, we want the Gemini and ElevenLabs calls hidden behind small interfaces, so that we can use fakes in tests and swap vendors without touching the turn logic.
-36. As the team, we want shared TypeScript types for the rubric, the judgment, and the report, so that the browser and the server can't disagree about the shape of the data.
+36. As the team, we want each data shape defined once on the server and mirrored in one small types file in the browser, so that the two sides can't quietly disagree and the copy is easy to check.
 37. As the team, we want no unused code, no duplicated logic, and no speculative features, so that the whole codebase stays small enough to keep in our heads.
 38. As the team, we want to explain every new slice back in our own words before moving on, so that neither of us ends up owning code we don't understand.
 
 ## Implementation Decisions
 
-The browser never talks to an AI service directly; a small local TypeScript server holds the keys and does every call. The whole project is TypeScript, so the browser and the server share the same data types.
+The browser never talks to an AI service directly; a small local Python server holds the keys and does every call. The frontend is React with TypeScript, the server is Python.
 
 ```
- Browser (React + TypeScript)   Local server (Node + TypeScript)   Services
- ----------------------------   ------------------------------     --------
+ Browser (React + TypeScript)   Local server (Python, FastAPI)   Services
+ ----------------------------   ----------------------------     --------
  Press-to-talk mic         <->  Holds the API keys            <->  1. ElevenLabs speech-to-text
  Typed fallback box             Session state in memory       <->  2. Gemini (judge + kid reply, one structured call)
  Avatar, round tracker          Planner call at start         <->  3. ElevenLabs text-to-speech (kid voice)
@@ -154,14 +158,15 @@ Each turn runs steps 1 to 3 in order through the server. The planner runs once b
 
 ### Tech stack
 
-- **Language:** TypeScript everywhere, in strict mode. One language means the team learns one syntax, and the browser and server share type definitions.
-- **Frontend:** React with TypeScript, built with Vite, with plain CSS. The app is a few state-driven screens made of small components, which is exactly what React is good at and keeps the code composable. If React feels like too much, the fallback is plain TypeScript with HTML and CSS; the server doesn't change either way.
+- **Server:** Python with **FastAPI**, run on the demo laptop. No deployment, no database. FastAPI is easy to read, and it checks incoming and outgoing data against the Pydantic models for free.
+- **Data shapes on the server:** **Pydantic** models, defined first. They document the data and validate it, including the structured output coming back from Gemini.
+- **Frontend:** **React with TypeScript**, built with **Vite**, with plain CSS. The app is a few state-driven screens made of small components, which is what React is good at and keeps the code composable. If React feels like too much, the fallback is plain TypeScript with HTML and CSS; the server doesn't change either way.
 - **State on the frontend:** React's built-in state only. No state library, no CSS framework (YAGNI).
-- **Backend:** a small Node server in TypeScript (Express), run on the demo laptop. No deployment, no database.
+- **Two languages, one set of shapes:** the data shapes (rubric, judgment, report) are defined once as Pydantic models, and mirrored by hand in one small TypeScript types file in the browser. Both sides use the same `snake_case` field names in the JSON, so nothing needs converting. Generating the TypeScript from the server is not worth the setup (YAGNI).
 - **Keys:** Gemini and ElevenLabs keys live in a local env file that is excluded from git.
-- **Services:** Gemini is the brain (planning, judging, report). ElevenLabs does speech-to-text for the learner and text-to-speech for the kid, using the MLH promo credits. Use the official JavaScript/TypeScript SDKs or plain HTTP calls, whichever is simpler to read.
+- **Services:** Gemini is the brain (planning, judging, report). ElevenLabs does speech-to-text for the learner and text-to-speech for the kid, using the MLH promo credits. Use the official Python SDKs or plain HTTP calls, whichever is simpler to read.
 - **Recording audio:** the browser's built-in audio recording.
-- **Tooling:** Prettier for formatting, ESLint for mistakes, Vitest for tests.
+- **Tooling:** **Ruff** (formats and checks the Python in one tool) and **pytest** on the server; **Prettier** and **ESLint** on the frontend. No frontend test suite, since the logic lives on the server (YAGNI).
 - **Demo browser:** Chrome on the demo laptop.
 
 ### Suggested project layout (a starting point, not a rule)
@@ -169,29 +174,30 @@ Each turn runs steps 1 to 3 in order through the server. The planner runs once b
 ```
 feynman/
   docs/                    SPEC.md, DECISIONS.md, DISCUSSION_HISTORY.md
-  shared/                  Types used by both browser and server (rubric, judgment, report)
   server/
+    models/                Pydantic models: rubric, judgment, session, report
     routes/                Thin: receive a request, call one function, return the result
     session/               Session state and turn flow (the rules)
-    planning/              Planner: notes in, four rounds out
-    judging/               Judge: answer in, structured judgment out
-    report/                Gap report builder
-    services/              Adapters: one file each for Gemini, ElevenLabs speech-to-text, ElevenLabs text-to-speech
+    planning/              plan_rounds: notes in, four rounds out
+    judging/               judge_answer: answer in, structured judgment out
+    report/                build_gap_report
+    services/              Interfaces plus one adapter file each for Gemini, ElevenLabs speech-to-text, ElevenLabs text-to-speech
+    tests/                 pytest tests and the fake adapters
   client/
     components/            Small pieces: KidAvatar, RoundTracker, Transcript, MicButton, TypedAnswerBox, RoundCard...
     screens/               NotesScreen, SessionScreen, ReportScreen (each assembled from components)
-    api/                   One small file that calls the server
+    api/                   One small file that calls the server, and the mirrored types file
 ```
 
 ### Modules
 
-1. **Shared types:** written first. The rubric, round, judgment, session, and report shapes, used by both sides.
+1. **Data models:** written first. The rubric, round, judgment, session, and report shapes as Pydantic models on the server, mirrored in one TypeScript file on the client.
 2. **Session state:** in memory on the server. Holds the notes, the rubric, the current round, the follow-up count, covered points so far, and every judged answer. One session at a time is enough.
-3. **Planner (`planRounds`):** one Gemini call when the session starts. Reads the notes and returns all four rounds. Saves the rubric to a file the team can open.
-4. **Judge (`judgeAnswer`):** one Gemini call per turn with structured output. Decides covered points, parroting, the next move, and the kid's reply text.
+3. **Planner (`plan_rounds`):** one Gemini call when the session starts. Reads the notes and returns all four rounds. Saves the rubric to a file the team can open.
+4. **Judge (`judge_answer`):** one Gemini call per turn with structured output. Decides covered points, parroting, the next move, and the kid's reply text.
 5. **Turn flow:** applies the rules (move on, follow up, or fuzzy after 2 follow-ups) with plain `if` statements on the judge's fields. Depends only on the interfaces below.
-6. **Service interfaces and adapters:** `SpeechToText`, `TextToSpeech`, and `LanguageModel`, each a tiny interface. One adapter file per vendor implements it. Tests use fake adapters.
-7. **Report builder (`buildGapReport`):** assembles the gap report from the stored judgments. May use one final Gemini call only to write the re-explain prompts.
+6. **Service interfaces and adapters:** `SpeechToText`, `TextToSpeech`, and `LanguageModel`, each a tiny interface (a Python `Protocol`). One adapter file per vendor implements it. Tests use fake adapters.
+7. **Report builder (`build_gap_report`):** assembles the gap report from the stored judgments. May use one final Gemini call only to write the re-explain prompts.
 8. **Frontend:** three screens (notes, session, report) built from small components. Each component does one visible thing.
 
 ### Server endpoints (one browser call each)
@@ -207,10 +213,10 @@ Four rounds in fixed order. Each has a type (what, how, why, example), the kid's
 
 ### Judge output per turn
 
-- `coveredKeyPoints`: which of this round's key points the answer covered
+- `covered_key_points`: which of this round's key points the answer covered
 - `parroting`: whether the answer mirrored the notes, plus the user phrase and the matching note line when it did
 - `decision`: `move_on` or `follow_up`
-- `kidReplyText`: 1-2 short sentences, either a confused question about one missing point or "oh I get it" plus a restatement in the user's words
+- `kid_reply_text`: 1-2 short sentences, either a confused question about one missing point or "oh I get it" plus a restatement in the user's words
 
 The server, not Gemini, enforces the cap. When `decision` is `follow_up` and the round already had `MAX_FOLLOW_UPS_PER_ROUND` (2) follow-ups, the server marks the round fuzzy and replaces the reply with the named fuzzy line: "I'm still a bit fuzzy on that, but let's try the next part!"
 
@@ -235,10 +241,10 @@ Only two permissions are needed: **Text to Speech** and **Speech to Text**. Ever
 
 ## Testing Decisions
 
-Test at one seam: the server's endpoints, with Gemini and ElevenLabs swapped for fake adapters that return canned answers. The fakes implement the same small interfaces as the real adapters, which is why the turn logic can be tested without any network. This is a proposal; confirm it before building.
+Test at one seam: the server's endpoints, using **pytest** and FastAPI's test client, with Gemini and ElevenLabs swapped for fake adapters that return canned answers. The fakes implement the same small interfaces as the real adapters, which is why the turn logic can be tested without any network. This is a proposal; confirm it before building.
 
 - **What a good test checks:** what the endpoints return for a given input (the reply, the round number, the mood, the report contents), not how the code is arranged inside.
-- **Test names read like sentences:** for example, "moves to the next round when the answer covers every key point".
+- **Test names read like sentences:** for example, `test_moves_to_next_round_when_answer_covers_every_key_point`.
 - **Why fakes:** real AI calls are slow, cost credits, and give different answers each time. A fake judge that returns fixed fields makes the turn logic testable in seconds.
 - **Turn-flow tests (the most important):**
     - A `move_on` judgment advances to the next round.
@@ -255,8 +261,8 @@ Test at one seam: the server's endpoints, with Gemini and ElevenLabs swapped for
 
 Build thin slices that always run: logic first, then voice, then polish. **Every slice ends with the "could I replicate this?" check** from Code Quality Requirements before the next one starts.
 
-- [ ] **0. Setup (both):** install Node, create the Vite React TypeScript app and the server, turn on TypeScript strict mode, Prettier, ESLint and Vitest, get Gemini and ElevenLabs keys working with the promo code, create the env file, add it to gitignore, pick the kid's ElevenLabs voice. Paste the AI rules block into your assistant.
-- [ ] **1. Hello server:** shared types file, a page with a button that calls the server and shows a reply.
+- [ ] **0. Setup (both):** install Python and Node, create the FastAPI server in a virtual environment and the Vite React TypeScript app, turn on TypeScript strict mode, set up Ruff, pytest, Prettier and ESLint, get Gemini and ElevenLabs keys working with the promo code, create the env file, add it to gitignore, pick the kid's ElevenLabs voice. Paste the AI rules block into your assistant.
+- [ ] **1. Hello server:** the data models (and their mirrored TypeScript file), a page with a button that calls the server and shows a reply.
 - [ ] **2. Planner:** paste notes, start, Gemini returns the four rounds, the rubric is saved to a file and shown in the console.
 - [ ] **3. Text-only loop:** type answers, the judge returns structured fields, the server applies move on / follow up / fuzzy at 2, the transcript fills in. Add the turn-flow tests here.
 - [ ] **4. Report:** round cards, missed points, parroting flags, re-explain prompts on a scrolling page.
@@ -289,14 +295,14 @@ The less technical teammate is the learner on stage. Rehearse talking points (2-
 - An overall score or grade.
 - Handling thin notes. The team controls the notes and always provides enough for 4 rounds.
 - Hardware from the lab.
-- A state-management library, a CSS framework, or any other tooling the spec doesn't call for.
+- A state-management library, a CSS framework, a frontend test suite, generating TypeScript types from the server, or any other tooling the spec doesn't call for.
 
 ## Further Notes
 
 - **Latency:** each turn chains speech-to-text, Gemini, and text-to-speech, so expect a few seconds. Short kid replies and the thinking state keep it feeling alive.
 - **If the kid leaks answers in rehearsal:** split the judge into two calls, where the reply-writing call never sees the notes. It's a contained change.
 - **Working with AI:** let it write larger chunks if you fall behind, but the explain-back and rewrite check still apply, so both of you can explain the code to judges. If the AI produces something you can't explain, ask it to simplify rather than accepting it.
-- **Learning curve:** React is the new part for a team with static-site experience. Components are just functions that return page pieces, and the AI can explain each one as it's written.
+- **Learning curve:** React is the new part for a team with static-site experience. Components are just functions that return page pieces, and the AI can explain each one as it's written. The Python server stays the language the stronger teammate is most comfortable in.
 - **On stage:** the technical teammate runs the laptop and takes architecture questions; the learner should still be able to say "browser, server, Gemini, ElevenLabs" in their own words.
 - **Tracks this enters by default:** Best Overall, Beginner, Best Use of Gemini API, Best Use of ElevenLabs. Prizes are not the goal.
 - **Open item:** the avatar style (drawn or generated), four mood images.

@@ -90,8 +90,7 @@ The team described the flow: paste notes, press start, and a Gemini "kid" asks q
 ## Step 15: Where does the code run?
 
 - **Options:** everything in the browser, a small backend, or serverless functions.
-- **Chosen:** a small local server on the demo laptop, with no deployment. The keys stay on the server in a file that never goes in git.
-- **Language at the time:** Python server with a plain HTML/CSS/JavaScript page. **This was later changed to TypeScript end to end; see "Revision after the spec" below.**
+- **Chosen:** a small local **Python** server on the demo laptop, with no deployment. The keys stay on the server in a file that never goes in git. The stronger teammate found Python easier to work with.
 
 ## Step 16: One Gemini call per turn or two?
 
@@ -127,22 +126,21 @@ The conversation was turned into a product spec document with problem, solution,
 
 The team showed their ElevenLabs permissions screen and asked what the key should access. Only **Text to Speech** and **Speech to Text** are needed. Speech to Speech should be turned off. Voices (Read) and Models are optional, and everything else, especially anything about the workspace, members, webhooks, or service accounts, should stay off.
 
-## Revision after the spec: TypeScript and code quality (October 10)
+## Revision after the spec: frontend stack and code quality (October 10)
 
-Two changes came from the team after the first version of the files.
-
-**1. Stack: TypeScript instead of Python.**
-- **Request:** use TypeScript with React, "or something," or just TypeScript with HTML and CSS.
-- **Chosen:** TypeScript end to end, with a **React + Vite + plain CSS** frontend and a small **Node (Express)** server. One language for the whole project, and the browser and server share the same type definitions. React's small components also fit the composable-code goal.
-- **Why React over plain TypeScript with HTML:** the app has a few state-driven screens (avatar mood, round tracker, transcript), which React handles cleanly. The fallback is plain TypeScript with HTML and CSS if React feels heavy; the server doesn't change either way.
-- **Kept simple:** React's built-in state only, no state library, no CSS framework.
+**1. Frontend stack: React with TypeScript.**
+- **Request:** use TypeScript and React, "or something," or just TypeScript with HTML and CSS.
+- **What went wrong:** I read this as "make the whole project TypeScript" and rewrote the server in Node and Express, which replaced the Python server the team had already chosen. The team asked why. I should have asked first, since the message could have been about the frontend only.
+- **Chosen (final):** **React + TypeScript (Vite, plain CSS)** for the browser and **Python (FastAPI with Pydantic)** for the server. React fits because the app is a few state-driven screens (avatar mood, round tracker, transcript) built from small components. The fallback is plain TypeScript with HTML and CSS if React feels heavy; the server is unchanged either way.
+- **Trade-off accepted:** with two languages, the data shapes (rubric, judgment, report) exist twice. They're defined once as Pydantic models and mirrored by hand in one small TypeScript types file, with the same `snake_case` field names on both sides. Generating the TypeScript from the server isn't worth the setup.
+- **Tooling:** Ruff and pytest on the server, Prettier and ESLint on the frontend, and no frontend test suite.
 
 **2. Readable, understandable code as a requirement.**
 - **Request:** emphasize clean, composable code following SOLID, KISS, DRY and YAGNI, with no poorly named variables the team couldn't replicate on their own.
 - **Chosen:**
   - A plain-words table of the principles, and a rule that KISS and YAGNI win when principles conflict.
-  - Naming and style rules: full-word names, verbs for functions, named constants instead of magic numbers, small single-purpose functions, one main export per file, strict TypeScript with no `any`, no dead code.
-  - Gemini and ElevenLabs sit behind tiny interfaces with one adapter file per vendor, so tests can use fakes.
+  - Naming and style rules for both languages: full-word names, verbs for functions, named constants instead of magic numbers, small single-purpose functions, one main thing per file, type hints and Pydantic models in Python, strict TypeScript with no `any`, no dead code.
+  - Gemini and ElevenLabs sit behind tiny interfaces (Python `Protocol`s) with one adapter file per vendor, so tests can use fakes.
   - A "could I replicate this?" check at the end of every slice: explain-back, rewrite one function from its name, check names, check for duplicates and extras, run the tests.
   - A block of rules to paste into the AI assistant at the start of every session.
   - A short readability pass added to the build order before demo prep.

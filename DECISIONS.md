@@ -74,7 +74,7 @@ Everything important we decided while planning, with the reason. Last updated Oc
 | # | Decision | Why |
 | --- | --- | --- |
 | 33 | **Gemini** is the brain, **ElevenLabs** does voice in and out. | Both are sponsor tools, and the team already has ElevenLabs credits. |
-| 34 | **Revised:** TypeScript end to end. **React + Vite + plain CSS** frontend and a small **Node (Express)** server, all in TypeScript. *Replaces the earlier plain HTML/JS frontend and Python server.* | One language to learn. The browser and server share type definitions. React's small components fit the "composable" goal. The team asked for TypeScript; React was my pick from the options they gave. |
+| 34 | **Revised:** a **Python (FastAPI)** server with a **React + TypeScript (Vite, plain CSS)** frontend. | The team asked for TypeScript and React for the frontend. I mistakenly applied that to the server too; the team chose to keep **Python** on the server because the stronger teammate finds it faster to work with. |
 | 35 | Run locally on the demo laptop. No deployment, no database. | Hosting and deployment are a time sink for a one-laptop demo. |
 | 36 | API keys live on the server in an env file excluded from git. | Keeps the keys out of the browser so credits can't leak. |
 | 37 | **One Gemini call per turn** with structured output (covered points, parroting, decision, kid reply). | Two calls would add delay to every turn. If the kid leaks answers, switch to two calls. |
@@ -82,6 +82,7 @@ Everything important we decided while planning, with the reason. Last updated Oc
 | 39 | **One planning call up front** builds the four-round rubric, saved to a file. | Keeps each turn fast and lets the team read and fix the rubric before the demo. |
 | 40 | Keep a hand-checked rubric for the recursion demo notes as a fallback. | The demo survives if the live planning call fails. |
 | 41 | Session state lives in server memory. | One session at a time is enough. |
+| 64 | Data shapes are defined once as **Pydantic** models on the server and mirrored by hand in one small TypeScript types file. Both sides use the same `snake_case` field names. | Two languages means two copies of the shapes; keeping the copy small and the names identical avoids conversion code. Generating the types is not worth the setup. |
 
 ## ElevenLabs API key permissions
 
@@ -111,7 +112,7 @@ Everything important we decided while planning, with the reason. Last updated Oc
 
 | # | Decision | Why |
 | --- | --- | --- |
-| 51 | Test at the server endpoints with fake Gemini and ElevenLabs adapters, using Vitest. Prompt quality is checked by rehearsal. | Fake services make the turn logic testable in seconds. *Proposed; confirm before building.* |
+| 51 | **Revised:** test at the server endpoints with **pytest** and fake Gemini and ElevenLabs adapters. Prompt quality is checked by rehearsal. No frontend test suite. | Fake services make the turn logic testable in seconds, and the logic lives on the server. *Proposed; confirm before building.* |
 
 ## Code quality (added October 10)
 
@@ -119,23 +120,23 @@ Everything important we decided while planning, with the reason. Last updated Oc
 | --- | --- | --- |
 | 52 | **Readable, understandable code is a top requirement.** Both teammates must be able to read, explain, and rewrite every line on their own. | It's the core of the learning goal, and judges may ask about the code. |
 | 53 | Follow **clean code, composable design, SOLID, KISS, DRY and YAGNI.** When they conflict, KISS and YAGNI win unless ignoring SOLID would hurt testing or readability. | SOLID is a tool for clarity, not a reason to add layers. |
-| 54 | Names are full words that say what a thing is. No abbreviations, no single-letter variables, no vague names like `res`, `tmp`, `data2`, `handleIt`. | The team wants no names they couldn't replicate on their own. |
+| 54 | Names are full words that say what a thing is. No abbreviations, no single-letter variables, no vague names like `res`, `tmp`, `data2`, `handle_it`. Python uses `snake_case`, TypeScript uses `camelCase`. | The team wants no names they couldn't replicate on their own. |
 | 55 | No magic numbers or strings. The follow-up cap is a named constant (`MAX_FOLLOW_UPS_PER_ROUND`), and the fuzzy line is a named constant. | One place to read and change each rule. |
-| 56 | Functions are small, do one job, and are named as verbs. One main export per file, named after the file. | Each piece can be explained in a sentence. |
-| 57 | TypeScript strict mode, no `any`. Shared types for the rubric, judgment, and report are written first. | Types double as documentation, and the browser and server can't disagree. |
-| 58 | External services (Gemini, ElevenLabs) sit behind tiny interfaces, one adapter file per vendor. Tests use fakes. | Dependency inversion, which also makes testing easy. |
-| 59 | Prettier formats and ESLint checks the code. | Style is never a debate. |
-| 60 | No dead code, no duplicated logic, no speculative features, no state library or CSS framework. | KISS, DRY and YAGNI. |
+| 56 | Functions are small, do one job, and are named as verbs. One main thing per file, named after the file. | Each piece can be explained in a sentence. |
+| 57 | **Revised:** Python has type hints on every function, no `Any`, and Pydantic models for data. TypeScript runs in strict mode with no `any`. The data shapes are written first. | Types double as documentation. |
+| 58 | **Revised:** external services (Gemini, ElevenLabs) sit behind tiny interfaces (Python `Protocol`s), one adapter file per vendor. Tests use fakes. | Dependency inversion, which also makes testing easy. |
+| 59 | **Revised:** **Ruff** formats and checks the Python in one tool. Prettier and ESLint handle the TypeScript. | Style is never a debate, and one Python tool is simpler than two. |
+| 60 | No dead code, no duplicated logic, no speculative features, no state library, CSS framework, or frontend test suite. | KISS, DRY and YAGNI. |
 | 61 | Every slice ends with the "could I replicate this?" check: explain it back, rewrite one function from its name, check the names, check for duplicates and extras, and run the tests. | Turns the readability goal into a repeatable habit. |
-| 62 | Paste a short code-rules block into the AI assistant at the start of every session. | Keeps the AI's output in the team's style. The block is in the spec. |
+| 62 | **Revised:** paste a short code-rules block into the AI assistant at the start of every session. It now covers both Python and TypeScript. | Keeps the AI's output in the team's style. The block is in the spec. |
 | 63 | Add a short readability pass before demo prep: read everything once and rename, delete, merge and split as needed. | Catches drift that builds up during a fast build. |
 
 ## Out of scope
 
-Selectable kid levels, adaptive difficulty, interrupting or streaming audio, progress over time, accounts or a database, deployment, an overall score, hardware, and extra tooling such as a state library or CSS framework.
+Selectable kid levels, adaptive difficulty, interrupting or streaming audio, progress over time, accounts or a database, deployment, an overall score, hardware, and extra tooling such as a state library, a CSS framework, a frontend test suite, or generated TypeScript types.
 
 ## Still open
 
 - Avatar style (drawn or generated) and four mood images.
 - Whether the testing approach (#51) is what the team wants.
-- Whether React feels manageable once setup starts. The fallback is plain TypeScript with HTML and CSS; the server is unchanged.
+- Whether React feels manageable once setup starts. The fallback is plain TypeScript with HTML and CSS; the Python server is unchanged.
