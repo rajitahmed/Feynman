@@ -1,12 +1,12 @@
 import base64
 import json
 from http import HTTPStatus
-from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
 from pydantic import BaseModel
 
+import planning.save_rubric as save_rubric_module
 from main import app
 from models.rubric import Rubric
 from services.canned_rubric import CANNED_RUBRIC
@@ -46,15 +46,11 @@ def test_start_session_speaks_the_first_round_question(monkeypatch: pytest.Monke
     assert fake_text_to_speech.spoken_texts == [CANNED_RUBRIC.rounds[0].kid_question]
 
 
-def test_start_session_saves_the_planned_rubric_to_a_file(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    # Keeps the team's real planned_rubric.json from being overwritten by test runs.
-    rubric_file_path = tmp_path / "planned_rubric.json"
-    monkeypatch.setattr("planning.save_rubric.RUBRIC_FILE_PATH", rubric_file_path)
-
+def test_start_session_saves_the_planned_rubric_to_a_file() -> None:
     client.post("/session/start", json={"notes": RECURSION_NOTES})
 
+    # conftest.py points this at a temporary file for every test.
+    rubric_file_path = save_rubric_module.RUBRIC_FILE_PATH
     saved_rubric = Rubric.model_validate(json.loads(rubric_file_path.read_text(encoding="utf-8")))
     assert saved_rubric == CANNED_RUBRIC
 

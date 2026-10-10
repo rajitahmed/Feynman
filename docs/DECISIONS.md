@@ -132,6 +132,8 @@ Everything important we decided while planning, with the reason. Last updated Oc
 | 63 | Add a short readability pass before demo prep: read everything once and rename, delete, merge and split as needed. | Catches drift that builds up during a fast build. |
 | 64 | Keep React at setup (ticket #1); the plain TypeScript fallback is not taken. | The Vite React scaffold was simple enough, and every frontend ticket explains its components as they are written. |
 | 65 | ElevenLabs gets its own switch, `SHOULD_USE_REAL_ELEVENLABS`, separate from `SHOULD_USE_REAL_GEMINI` (ticket #12). Both default to fake. | Lets us rehearse the real judge without spending voice credits, and keeps each switch name honest. |
+| 66 | **Revised #13 and #38:** cap of **1 follow-up** per round, so the kid asks the round question, at most one follow-up, then moves on (got it or fuzzy). The last round always ends with "Thanks for explaining all that to me!" and the happy sprite. | Two follow-ups dragged in rehearsal, and "let's try the next part" made no sense before the report. |
+| 67 | The judge reads the whole round (kid questions and earlier answers) and credits ideas in the learner's own words, analogies, or a different example. The planner writes key points as general ideas, never tied to the notes' example. | In rehearsal the kid stayed confused after solid answers: it judged "in the stack!" without the question it answered, and a Fibonacci example could not cover factorial-only key points. |
 
 ## Out of scope
 

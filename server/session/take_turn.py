@@ -8,8 +8,10 @@ from services.speak_as_base64 import speak_as_base64
 from services.text_to_speech import TextToSpeech
 
 # The server enforces the cap, not the language model, so the learner can never get stuck.
-MAX_FOLLOW_UPS_PER_ROUND = 2
+MAX_FOLLOW_UPS_PER_ROUND = 1
 FUZZY_KID_LINE = "I'm still a bit fuzzy on that, but let's try the next part!"
+# The report comes next, so the kid ends happy instead of pointing at a next part that isn't there.
+FINISHED_KID_LINE = "Thanks for explaining all that to me!"
 # A fuzzy round still follows a follow-up decision, so the kid stays confused there too.
 KID_MOOD_BY_DECISION = {Decision.FOLLOW_UP: KidMood.CONFUSED, Decision.MOVE_ON: KidMood.GOT_IT}
 
@@ -20,7 +22,13 @@ def take_turn(
     language_model: LanguageModel,
     text_to_speech: TextToSpeech,
 ) -> SubmitTurnReply:
-    judgment = judge_answer(session.notes, find_current_round(session), answer_text, language_model)
+    judgment = judge_answer(
+        session.notes,
+        find_current_round(session),
+        find_current_round_answers(session),
+        answer_text,
+        language_model,
+    )
     record_judged_answer(session, answer_text, judgment)
     kid_mood = KID_MOOD_BY_DECISION[judgment.decision]
     kid_reply_text = judgment.kid_reply_text
@@ -32,9 +40,9 @@ def take_turn(
         kid_reply_text = FUZZY_KID_LINE
     if session.current_round_number == len(session.rubric.rounds):
         session.is_finished = True
-    else:
-        advance_round(session)
-        kid_reply_text += f" {find_current_round(session).kid_question}"
+        return build_reply(session, answer_text, FINISHED_KID_LINE, KidMood.GOT_IT, text_to_speech)
+    advance_round(session)
+    kid_reply_text += f" {find_current_round(session).kid_question}"
     return build_reply(session, answer_text, kid_reply_text, kid_mood, text_to_speech)
 
 
@@ -58,6 +66,14 @@ def build_reply(
 def find_current_round(session: Session) -> Round:
     # Round numbers start at 1 for people; list positions start at 0.
     return session.rubric.rounds[session.current_round_number - 1]
+
+
+def find_current_round_answers(session: Session) -> list[JudgedAnswer]:
+    return [
+        judged_answer
+        for judged_answer in session.judged_answers
+        if judged_answer.round_number == session.current_round_number
+    ]
 
 
 def record_judged_answer(session: Session, answer_text: str, judgment: Judgment) -> None:

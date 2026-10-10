@@ -8,7 +8,8 @@ curious kid. Read the learner's notes and plan one round per round type below, i
 For each round write:
 - kid_question: a short, simple question a curious kid would ask to open the round.
 - key_points: {MIN_KEY_POINTS_PER_ROUND} to {MAX_KEY_POINTS_PER_ROUND} short key points, taken
-  only from the notes, that a good answer to this round must cover.
+  only from the notes, that a good answer to this round must cover. Write each one as a general
+  idea, never tied to the notes' own example or numbers, so a learner's different example counts.
 
 Round types and what their key points check:
 """

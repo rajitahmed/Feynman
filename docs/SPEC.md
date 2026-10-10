@@ -13,7 +13,7 @@ Asking a chatbot to "pretend to be a 5-year-old" doesn't fix this. It tends to n
 Feynman is a voice-first practice tool. You paste your notes, press start, and explain the topic out loud to a curious kid character who only ever does one of two things: gets confused, or says "oh I get it" and restates your explanation in simple words.
 
 - **Four fixed rounds** follow the arc what, how, why, example (for recursion: what is it, how does it relate to loops, what is it for, give an example).
-- **A hidden rubric** built from your notes decides whether each answer covered the key points. The kid asks at most 2 follow-ups per round, then says "I'm still a bit fuzzy, but let's try the next part" and moves on.
+- **A hidden rubric** built from your notes decides whether each answer covered the key points. The kid asks at most 1 follow-up per round, then says "I'm still a bit fuzzy, but let's try the next part" and moves on.
 - **The kid never teaches or corrects.** It never reveals what is in the notes.
 - **A gap report** at the end shows four round cards, the key points you missed, the answers that mirrored your notes (your words next to the matching note line), and one "try re-explaining this" prompt per gap. There is no score.
 
@@ -47,7 +47,7 @@ These apply to both languages. Python uses `snake_case` for functions and variab
 - **Names are full words that say what a thing is.** Good: `covered_key_points`, `follow_up_count`, `kid_reply_text`, `is_round_fuzzy` (Python) and `coveredKeyPoints`, `RoundTracker`, `isRecording` (TypeScript). Bad: `res`, `d`, `tmp`, `data2`, `handle_it`, `x`.
 - **No abbreviations** unless everyone knows them (`id`, `url`). `STT` and `TTS` are not obvious; use `speech_to_text` and `text_to_speech`.
 - **Functions are verbs** that say what they do: `plan_rounds`, `judge_answer`, `build_gap_report`. **Booleans start with `is`, `has`, or `should`.**
-- **No magic numbers or strings.** The follow-up cap is `MAX_FOLLOW_UPS_PER_ROUND = 2`, defined once and named. The fuzzy line the kid says is one named constant.
+- **No magic numbers or strings.** The follow-up cap is `MAX_FOLLOW_UPS_PER_ROUND = 1`, defined once and named. The fuzzy line the kid says is one named constant.
 - **File names match what they hold.** A file named `judge_answer.py` contains `judge_answer`. One main thing per file.
 - **Small functions.** If a function doesn't fit on one screen, or needs a comment to explain its middle, split it into named steps.
 - **Types explain the data.** Every Python function has type hints on its inputs and outputs, with no `Any`. Data shapes are Pydantic models. The TypeScript side runs in strict mode with no `any`. The shapes for the rubric, the judgment, and the report are written first and double as documentation.
@@ -92,7 +92,7 @@ The block to paste at the start of every AI coding session lives in [AI_RULES.md
 14. As a learner, I want the kid to ask one specific confused question when I miss a key point, so that I'm nudged toward the gap without being told the answer.
 15. As a learner, I want the kid never to correct me or add facts from the notes, so that the understanding I show is my own.
 16. As a learner, I want the kid's restatement to use only my words, so that it doesn't accidentally teach me the answer.
-17. As a learner, I want the kid to stop asking after 2 follow-ups and say it's still a bit fuzzy, so that I never get stuck in a loop.
+17. As a learner, I want the kid to stop asking after 1 follow-up and say it's still a bit fuzzy, so that I never get stuck in a loop.
 18. As a learner, I want the kid's replies kept to 1-2 short sentences, so that the conversation moves quickly.
 19. As a learner, I want the avatar to change mood (listening, thinking, confused, "I get it"), so that I can read the kid's reaction at a glance.
 20. As a learner, I want the rubric hidden during the session, so that I'm not just ticking off a checklist.
@@ -134,7 +134,7 @@ The browser never talks to an AI service directly; a small local Python server h
  Press-to-talk mic         <->  Holds the API keys            <->  1. ElevenLabs speech-to-text
  Typed fallback box             Session state in memory       <->  2. Gemini (judge + kid reply, one structured call)
  Avatar, round tracker          Planner call at start         <->  3. ElevenLabs text-to-speech (kid voice)
- Live transcript                Enforces 2 follow-up cap
+ Live transcript                Enforces 1 follow-up cap
  Plays the kid audio            Builds the gap report
  Gap report page
 ```
@@ -180,7 +180,7 @@ feynman/
 2. **Session state:** in memory on the server. Holds the notes, the rubric, the current round, the follow-up count, covered points so far, and every judged answer. One session at a time is enough.
 3. **Planner (`plan_rounds`):** one Gemini call when the session starts. Reads the notes and returns all four rounds. Saves the rubric to a file the team can open.
 4. **Judge (`judge_answer`):** one Gemini call per turn with structured output. Decides covered points, parroting, the next move, and the kid's reply text.
-5. **Turn flow:** applies the rules (move on, follow up, or fuzzy after 2 follow-ups) with plain `if` statements on the judge's fields. Depends only on the interfaces below.
+5. **Turn flow:** applies the rules (move on, follow up, or fuzzy after 1 follow-up) with plain `if` statements on the judge's fields. Depends only on the interfaces below.
 6. **Service interfaces and adapters:** `SpeechToText`, `TextToSpeech`, and `LanguageModel`, each a tiny interface (a Python `Protocol`). One adapter file per vendor implements it. Tests use fake adapters.
 7. **Report builder (`build_gap_report`):** assembles the gap report from the stored judgments. May use one final Gemini call only to write the re-explain prompts.
 8. **Frontend:** three screens (notes, session, report) built from small components. Each component does one visible thing.
@@ -203,7 +203,7 @@ Four rounds in fixed order. Each has a type (what, how, why, example), the kid's
 - `decision`: `move_on` or `follow_up`
 - `kid_reply_text`: 1-2 short sentences, either a confused question about one missing point or "oh I get it" plus a restatement in the user's words
 
-The server, not Gemini, enforces the cap. When `decision` is `follow_up` and the round already had `MAX_FOLLOW_UPS_PER_ROUND` (2) follow-ups, the server marks the round fuzzy and replaces the reply with the named fuzzy line: "I'm still a bit fuzzy on that, but let's try the next part!"
+The server, not Gemini, enforces the cap. When `decision` is `follow_up` and the round already had `MAX_FOLLOW_UPS_PER_ROUND` (1) follow-up, the server marks the round fuzzy and replaces the reply with the named fuzzy line: "I'm still a bit fuzzy on that, but let's try the next part!"
 
 ### Kid rules (in the judge prompt)
 
@@ -234,7 +234,7 @@ Test at one seam: the server's endpoints, using **pytest** and FastAPI's test cl
 - **Turn-flow tests (the most important):**
     - A `move_on` judgment advances to the next round.
     - A `follow_up` judgment stays on the round and counts the follow-up.
-    - A third `follow_up` in one round marks it fuzzy, uses the fuzzy line, and advances.
+    - A second `follow_up` in one round marks it fuzzy, uses the fuzzy line, and advances.
     - After round 4 the session is marked finished.
 - **Report tests:** missed points equal rubric points minus covered points; a parroted answer appears with its phrase and note line; a fuzzy round gets a re-explain prompt; no score field exists.
 - **Typed fallback test:** a typed answer skips speech-to-text and goes through the same turn flow.
@@ -249,7 +249,7 @@ Build thin slices that always run: logic first, then voice, then polish. **Every
 - [ ] **0. Setup (both):** install Python and Node, create the FastAPI server in a virtual environment and the Vite React TypeScript app, turn on TypeScript strict mode, set up Ruff, pytest, Prettier and ESLint, get Gemini and ElevenLabs keys working with the promo code, create the env file, add it to gitignore, pick the kid's ElevenLabs voice. Paste the AI rules block into your assistant.
 - [ ] **1. Hello server:** the data models (and their mirrored TypeScript file), a page with a button that calls the server and shows a reply.
 - [ ] **2. Planner:** paste notes, start, Gemini returns the four rounds, the rubric is saved to a file and shown in the console.
-- [ ] **3. Text-only loop:** type answers, the judge returns structured fields, the server applies move on / follow up / fuzzy at 2, the transcript fills in. Add the turn-flow tests here.
+- [ ] **3. Text-only loop:** type answers, the judge returns structured fields, the server applies move on / follow up / fuzzy after 1, the transcript fills in. Add the turn-flow tests here.
 - [ ] **4. Report:** round cards, missed points, parroting flags, re-explain prompts on a scrolling page.
 - [ ] **5. Kid's voice out:** every kid reply is spoken with ElevenLabs text-to-speech.
 - [ ] **6. Voice in:** press-to-talk records audio, ElevenLabs speech-to-text transcribes it, the typed box stays as fallback.
@@ -265,7 +265,7 @@ Build thin slices that always run: logic first, then voice, then polish. **Every
 | --- | --- | --- | --- |
 | 1 | What is recursion? | Good, original explanation | Covered on first try |
 | 2 | How does it relate to loops? | Vague ("a loop that calls itself"), then a fix | One follow-up, then covered |
-| 3 | What is it for? | Two weak answers | Fuzzy after the 2 follow-up cap |
+| 3 | What is it for? | Two weak answers | Fuzzy after the 1 follow-up cap |
 | 4 | Give an example | Read close to the notes | Parroting flag in the report |
 
 The less technical teammate is the learner on stage. Rehearse talking points (2-3 bullets per round), not scripts.
