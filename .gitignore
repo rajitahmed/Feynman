@@ -4,7 +4,7 @@
 CLAUDE.md
 skills-lock.json
 
-# Secrets (Gemini and ElevenLabs keys)
+# Secrets
 .env
 .env.*
 
