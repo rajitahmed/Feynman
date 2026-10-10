@@ -1,4 +1,5 @@
 import type { GapReport } from "../api/types.ts";
+import KidAvatar from "../components/KidAvatar.tsx";
 import RoundCard from "../components/RoundCard.tsx";
 import "./ReportScreen.css";
 
@@ -13,9 +14,12 @@ function ReportScreen({ report }: ReportScreenProps) {
 
   return (
     <main className="report-screen">
-      <header className="card report-screen__card">
-        <h1 className="report-screen__title">Thanks for teaching me!</h1>
-        <p className="report-screen__muted">{todayText}</p>
+      <header className="card report-screen__card report-screen__header">
+        <KidAvatar mood="got_it" shouldPlayOnce />
+        <div>
+          <h1 className="report-screen__title">Thanks for teaching me!</h1>
+          <p className="report-screen__muted">{todayText}</p>
+        </div>
       </header>
 
       <section className="card report-screen__card">

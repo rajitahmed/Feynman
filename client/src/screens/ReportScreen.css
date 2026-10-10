@@ -11,6 +11,13 @@
   padding: var(--space-6);
 }
 
+.report-screen__header {
+  --kid-avatar-size: 120px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+}
+
 .report-screen__title {
   margin: 0;
   font-size: var(--font-size-title);

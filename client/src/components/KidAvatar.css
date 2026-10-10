@@ -8,9 +8,27 @@
   background-size: calc(var(--kid-avatar-size) * var(--sprite-frame-count))
     calc(var(--kid-avatar-size) * var(--sprite-row-count));
   background-position-y: calc(var(--kid-avatar-size) * var(--sprite-row) * -1);
-  animation: play-sprite-row
+  /* The parent remounts the avatar when the mood's row changes, so the new mood fades in.
+     ponytail: fade-in, not a true crossfade; that needs the old frame kept as a second layer. */
+  animation:
+    fade-in var(--duration-normal) ease-out,
+    play-sprite-row
+      calc(var(--sprite-frame-duration) * var(--sprite-frame-count))
+      steps(var(--sprite-frame-count)) infinite;
+}
+
+/* Plays the row once and holds the last frame, so the report's kid settles instead of looping.
+   jump-none shows the first and last frame each for a full step, ending exactly on the last one. */
+.kid-avatar--play-once {
+  animation: play-sprite-row-once
     calc(var(--sprite-frame-duration) * var(--sprite-frame-count))
-    steps(var(--sprite-frame-count)) infinite;
+    steps(var(--sprite-frame-count), jump-none) forwards;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
 }
 
 @keyframes play-sprite-row {
@@ -24,9 +42,13 @@
   }
 }
 
-/* Frame 0 of the mood's row still shows the mood, so nothing is lost. */
-@media (prefers-reduced-motion: reduce) {
-  .kid-avatar {
-    animation: none;
+@keyframes play-sprite-row-once {
+  from {
+    background-position-x: 0;
+  }
+  to {
+    background-position-x: calc(
+      var(--kid-avatar-size) * (var(--sprite-frame-count) - 1) * -1
+    );
   }
 }

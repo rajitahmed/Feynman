@@ -1,6 +1,7 @@
 .kid-tile {
   --kid-avatar-size: 320px;
   --overlay-ring-width: 4px;
+  --pulse-ring-width: var(--overlay-ring-width);
   position: relative;
   display: flex;
   flex-direction: column;
@@ -12,18 +13,17 @@
   border-radius: var(--radius-card);
 }
 
-/* Listening overlay: a blue ring around the tile. The pulse comes with the motion pass. */
+/* Listening overlay: a pulsing blue ring around the tile. */
 .kid-tile--listening {
   box-shadow: 0 0 0 var(--overlay-ring-width) var(--color-blue);
+  animation: pulse-ring var(--duration-pulse) ease-in-out infinite;
 }
 
-/* Active speaker border, like a video call's, while the kid's audio plays. */
+/* Active speaker border, like a video call's, while the kid's audio plays.
+   It wins over the listening pulse while the kid asks the first question. */
 .kid-tile--talking {
   box-shadow: 0 0 0 var(--overlay-ring-width) var(--color-yellow);
-}
-
-.kid-tile__thinking-dots {
-  letter-spacing: 0.2em;
+  animation: none;
 }
 
 .kid-tile__name-tag {

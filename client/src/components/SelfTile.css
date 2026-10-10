@@ -2,6 +2,7 @@
 .self-tile {
   --self-tile-width: 160px;
   --self-tile-height: 100px;
+  --pulse-ring-width: 4px;
   position: absolute;
   right: var(--space-4);
   bottom: var(--space-4);
@@ -10,7 +11,14 @@
   width: var(--self-tile-width);
   height: var(--self-tile-height);
   font-weight: 800;
-  color: var(--color-text-inverse);
+  color: var(--color-text);
   background: var(--color-avatar-dark);
   border-radius: var(--radius-button);
+}
+
+/* While you record, your tile pulses blue, so you're the active speaker.
+   The mic owns the recording state; :has() reads it from the page instead of threading it through as props. */
+body:has(.mic-button--recording) .self-tile {
+  box-shadow: 0 0 0 var(--pulse-ring-width) var(--color-blue);
+  animation: pulse-ring var(--duration-pulse) ease-in-out infinite;
 }

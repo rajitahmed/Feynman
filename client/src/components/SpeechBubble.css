@@ -9,6 +9,15 @@
   text-align: center;
   background: var(--color-card);
   border-radius: var(--radius-card);
+  transform-origin: bottom center;
+  animation: pop-in var(--duration-normal) ease-out;
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
 }
 
 /* The tail: a rotated square peeking out under the middle, pointing at the kid. */

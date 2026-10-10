@@ -1,6 +1,8 @@
 .mic-button {
   --button-color: var(--color-blue);
   --button-edge-color: var(--color-blue-edge);
+  /* White passes on blue and red at this large, bold size. */
+  --button-text-color: var(--color-text-inverse);
   --pulse-ring-width: var(--space-2);
 }
 
@@ -19,11 +21,5 @@
   to {
     outline: var(--pulse-ring-width) solid transparent;
     outline-offset: var(--pulse-ring-width);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .mic-button--recording {
-    animation: none;
   }
 }

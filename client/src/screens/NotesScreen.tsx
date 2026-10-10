@@ -8,6 +8,7 @@ import type { StartSessionReply, StartSessionRequest } from "../api/types.ts";
 import Button from "../components/Button.tsx";
 import KidAvatar from "../components/KidAvatar.tsx";
 import SpeechBubble from "../components/SpeechBubble.tsx";
+import ThinkingDots from "../components/ThinkingDots.tsx";
 import "./NotesScreen.css";
 
 const NOTES_BOX_LINES = 12;
@@ -55,7 +56,7 @@ function NotesScreen({ onSessionStarted }: NotesScreenProps) {
     return (
       <main className="notes-screen">
         <KidAvatar mood="thinking" />
-        <p aria-hidden="true">• • •</p>
+        <ThinkingDots />
         <p className="notes-screen__preparing" role="status">
           Preparing your session…
         </p>

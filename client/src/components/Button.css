@@ -1,8 +1,10 @@
 .button {
   --button-color: var(--color-green);
   --button-edge-color: var(--color-green-edge);
+  /* White on the beanie green and the disabled grey fails contrast; dark text passes on both. */
+  --button-text-color: var(--color-text);
   font: 800 var(--font-size-large) var(--font-family);
-  color: var(--color-text-inverse);
+  color: var(--button-text-color);
   background: var(--button-color);
   border: none;
   border-radius: var(--radius-button);
@@ -22,5 +24,7 @@
 .button:disabled {
   --button-color: var(--color-avatar-light);
   --button-edge-color: var(--color-avatar-dark);
+  /* Repeated so a variant with white text, like the mic, still turns dark when disabled. */
+  --button-text-color: var(--color-text);
   cursor: not-allowed;
 }

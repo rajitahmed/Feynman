@@ -37,7 +37,8 @@
 
 .notes-screen__demo-link {
   font: inherit;
-  color: var(--color-blue);
+  /* The beanie blue is too light for small text on white. */
+  color: var(--color-blue-edge);
   background: none;
   border: none;
   text-decoration: underline;

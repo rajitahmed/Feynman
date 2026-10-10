@@ -9,9 +9,10 @@ import "./KidAvatar.css";
 
 type KidAvatarProps = {
   mood: KidMood;
+  shouldPlayOnce?: boolean;
 };
 
-function KidAvatar({ mood }: KidAvatarProps) {
+function KidAvatar({ mood, shouldPlayOnce = false }: KidAvatarProps) {
   // React's style type has no slot for custom properties, hence the cast.
   const spriteRowStyle = {
     "--sprite-row": KID_SPRITE_ROW_BY_MOOD[mood],
@@ -19,7 +20,9 @@ function KidAvatar({ mood }: KidAvatarProps) {
 
   return (
     <div
-      className="kid-avatar"
+      className={
+        shouldPlayOnce ? "kid-avatar kid-avatar--play-once" : "kid-avatar"
+      }
       role="img"
       aria-label={`${KID_NAME}: ${KID_MOOD_LABELS[mood]}`}
       style={spriteRowStyle}
