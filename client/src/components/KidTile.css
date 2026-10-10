@@ -37,3 +37,11 @@
   background: var(--color-text);
   border-radius: var(--radius-pill);
 }
+
+/* On a phone the full-size kid would leave no room for the transcript under it. */
+@media (max-width: 900px) {
+  .kid-tile {
+    --kid-avatar-size: 160px;
+    padding: var(--space-4);
+  }
+}

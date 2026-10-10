@@ -2,13 +2,16 @@
   --transcript-width: 320px;
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  /* dvh, so a phone's browser bars don't push the mic off screen. */
+  height: 100dvh;
 }
 
 .session-screen__call {
   display: grid;
   flex: 1;
-  /* The row takes the space left between the tracker and the control bar; nothing grows it. */
+  /* Without this, a flex item grows to fit its content, so a long transcript stretches the page
+     and pushes Pip and the mic out of view. With it, the row only takes the space that's left. */
+  min-height: 0;
   grid-template-rows: minmax(0, 1fr);
   grid-template-columns: 1fr var(--transcript-width);
   gap: var(--space-6);
@@ -29,14 +32,12 @@
   margin: 0;
 }
 
-/* We design for the demo laptop; narrower screens just stack the transcript under the tile. */
+/* Narrow screens stack the transcript under the tile; it still takes only the space that's left. */
 @media (max-width: 900px) {
-  .session-screen {
-    height: auto;
-  }
-
   .session-screen__call {
-    grid-template-rows: auto;
+    grid-template-rows: auto minmax(0, 1fr);
     grid-template-columns: 1fr;
+    gap: var(--space-3);
+    padding: var(--space-3);
   }
 }

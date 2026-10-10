@@ -22,3 +22,11 @@ body:has(.mic-button--recording) .self-tile {
   box-shadow: 0 0 0 var(--pulse-ring-width) var(--color-blue);
   animation: pulse-ring var(--duration-pulse) ease-in-out infinite;
 }
+
+/* Smaller on a phone, so it doesn't cover the smaller kid. */
+@media (max-width: 900px) {
+  .self-tile {
+    --self-tile-width: 80px;
+    --self-tile-height: 50px;
+  }
+}
