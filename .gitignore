@@ -1,0 +1,25 @@
+# AI assistant config
+.claude/
+.agents/
+CLAUDE.md
+skills-lock.json
+
+# Secrets (Gemini and ElevenLabs keys)
+.env
+.env.*
+
+# Python
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+
+# Node
+node_modules/
+dist/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
