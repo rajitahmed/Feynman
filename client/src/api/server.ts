@@ -13,6 +13,12 @@ export function startSession(
   return postJson<StartSessionReply>("/api/session/start", request);
 }
 
+export function startDemoSession(
+  request: StartSessionRequest,
+): Promise<StartSessionReply> {
+  return postJson<StartSessionReply>("/api/session/start-demo", request);
+}
+
 export function submitTurn(
   request: SubmitTurnRequest,
 ): Promise<SubmitTurnReply> {

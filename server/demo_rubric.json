@@ -1,0 +1,37 @@
+{
+  "rounds": [
+    {
+      "round_type": "what",
+      "kid_question": "What is recursion?",
+      "key_points": [
+        "A function that calls itself",
+        "It solves a problem by solving smaller versions of the same problem"
+      ]
+    },
+    {
+      "round_type": "how",
+      "kid_question": "How is that different from a loop?",
+      "key_points": [
+        "Each call works on a smaller input",
+        "A base case stops the calls",
+        "Results are combined as the calls return"
+      ]
+    },
+    {
+      "round_type": "why",
+      "kid_question": "Why would anyone use it?",
+      "key_points": [
+        "Some problems are naturally made of smaller copies of themselves",
+        "It can make code shorter and clearer than a loop"
+      ]
+    },
+    {
+      "round_type": "example",
+      "kid_question": "Can you give me an example?",
+      "key_points": [
+        "A concrete case such as factorial or walking a folder tree",
+        "The example names its base case"
+      ]
+    }
+  ]
+}

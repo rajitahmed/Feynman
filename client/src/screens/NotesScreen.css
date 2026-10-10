@@ -50,3 +50,17 @@
 .notes-screen__notes:focus {
   border-color: var(--color-blue);
 }
+
+.notes-screen__demo-link {
+  font: inherit;
+  color: var(--color-blue);
+  background: none;
+  border: none;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.notes-screen__demo-link:disabled {
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+}

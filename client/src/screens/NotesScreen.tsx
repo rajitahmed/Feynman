@@ -1,6 +1,10 @@
 import { useEffect, useState, type FormEvent } from "react";
-import { getKidGreeting, startSession } from "../api/server.ts";
-import type { StartSessionReply } from "../api/types.ts";
+import {
+  getKidGreeting,
+  startDemoSession,
+  startSession,
+} from "../api/server.ts";
+import type { StartSessionReply, StartSessionRequest } from "../api/types.ts";
 import Button from "../components/Button.tsx";
 import KidAvatar from "../components/KidAvatar.tsx";
 import SpeechBubble from "../components/SpeechBubble.tsx";
@@ -25,12 +29,18 @@ function NotesScreen({ onSessionStarted }: NotesScreenProps) {
       .catch(() => setKidGreeting(""));
   }, []);
 
-  async function submitNotes(event: FormEvent<HTMLFormElement>) {
+  function submitNotes(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    void beginSession(startSession);
+  }
+
+  async function beginSession(
+    start: (request: StartSessionRequest) => Promise<StartSessionReply>,
+  ) {
     setIsPreparing(true);
     setErrorMessage("");
     try {
-      const reply = await startSession({ notes });
+      const reply = await start({ notes });
       onSessionStarted(reply);
     } catch (error) {
       setErrorMessage(`Could not start the session: ${String(error)}`);
@@ -70,6 +80,15 @@ function NotesScreen({ onSessionStarted }: NotesScreenProps) {
         <Button type="submit" disabled={notes.trim() === ""}>
           Start
         </Button>
+        {/* Backup if live planning fails on stage; also rehearses without spending credits. */}
+        <button
+          type="button"
+          className="notes-screen__demo-link"
+          disabled={notes.trim() === ""}
+          onClick={() => void beginSession(startDemoSession)}
+        >
+          Use demo rubric
+        </button>
       </form>
     </main>
   );
