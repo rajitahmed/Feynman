@@ -1,5 +1,6 @@
 import type {
   GapReport,
+  KidGreeting,
   StartSessionReply,
   StartSessionRequest,
   SubmitTurnReply,
@@ -16,6 +17,10 @@ export function submitTurn(
   request: SubmitTurnRequest,
 ): Promise<SubmitTurnReply> {
   return postJson<SubmitTurnReply>("/api/session/turn", request);
+}
+
+export function getKidGreeting(): Promise<KidGreeting> {
+  return getJson<KidGreeting>("/api/kid/greeting");
 }
 
 export function getReport(): Promise<GapReport> {

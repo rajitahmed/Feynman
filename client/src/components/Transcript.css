@@ -1,4 +1,7 @@
 .transcript {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
   padding: var(--space-4);
   background: var(--color-card);
   border: var(--border-width) solid var(--color-border);
@@ -16,9 +19,41 @@
 
 .transcript__lines {
   display: flex;
+  flex: 1;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--space-3);
   margin: 0;
   padding: 0;
+  overflow-y: auto;
   list-style: none;
+}
+
+/* Kid lines sit on the left, yours on the right, like a chat. */
+.transcript__line {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
+}
+
+.transcript__line--you {
+  align-items: flex-end;
+}
+
+.transcript__speaker {
+  font-size: var(--font-size-label);
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+.transcript__bubble {
+  max-width: 85%;
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-page);
+  border-radius: var(--radius-button);
+}
+
+.transcript__line--you .transcript__bubble {
+  background: var(--color-tint-blue);
 }

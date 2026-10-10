@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { getReport, submitTurn } from "../api/server.ts";
 import type { GapReport } from "../api/types.ts";
+import KidTile from "../components/KidTile.tsx";
+import type { KidMood } from "../components/kidMood.ts";
+import { KID_NAME } from "../components/kidName.ts";
 import RoundTracker from "../components/RoundTracker.tsx";
 import Transcript, { type TranscriptLine } from "../components/Transcript.tsx";
 import TypedAnswerBox from "../components/TypedAnswerBox.tsx";
@@ -23,12 +26,13 @@ function SessionScreen({
     { speaker: "kid", text: firstKidQuestion },
   ]);
   const [roundNumber, setRoundNumber] = useState(FIRST_ROUND_NUMBER);
-  const [isKidThinking, setIsKidThinking] = useState(false);
+  const [kidMood, setKidMood] = useState<KidMood>("listening");
   const [errorMessage, setErrorMessage] = useState("");
   const [isSessionFinished, setIsSessionFinished] = useState(false);
 
   async function sendAnswer(answerText: string): Promise<boolean> {
-    setIsKidThinking(true);
+    const moodBeforeAnswer = kidMood;
+    setKidMood("thinking");
     setErrorMessage("");
     try {
       const reply = await submitTurn({ answer_text: answerText });
@@ -39,6 +43,7 @@ function SessionScreen({
         { speaker: "kid", text: reply.kid_reply_text },
       ]);
       setRoundNumber(reply.round_number);
+      setKidMood(reply.kid_mood);
       setIsSessionFinished(reply.is_session_finished);
       if (reply.is_session_finished) {
         void loadReport();
@@ -46,9 +51,8 @@ function SessionScreen({
       return true;
     } catch (error) {
       setErrorMessage(`Could not send your answer: ${String(error)}`);
+      setKidMood(moodBeforeAnswer);
       return false;
-    } finally {
-      setIsKidThinking(false);
     }
   }
 
@@ -60,19 +64,29 @@ function SessionScreen({
     }
   }
 
+  const isKidThinking = kidMood === "thinking";
+  const latestKidLine = transcriptLines.findLast(
+    (line) => line.speaker === "kid",
+  );
+
   return (
     <main className="session-screen">
       <RoundTracker roundNumber={roundNumber} roundCount={roundCount} />
-      <Transcript lines={transcriptLines} />
-      {isKidThinking && <p role="status">The kid is thinking…</p>}
-      {errorMessage && <p role="alert">{errorMessage}</p>}
-      {isSessionFinished ? (
-        <p role="status">
-          That's all {roundCount} rounds. Writing your report…
-        </p>
-      ) : (
-        <TypedAnswerBox isDisabled={isKidThinking} onSend={sendAnswer} />
-      )}
+      <div className="session-screen__call">
+        <KidTile mood={kidMood} latestKidLine={latestKidLine?.text ?? ""} />
+        <Transcript lines={transcriptLines} />
+      </div>
+      <footer className="session-screen__control-bar">
+        {isKidThinking && <p role="status">{KID_NAME} is thinking…</p>}
+        {errorMessage && <p role="alert">{errorMessage}</p>}
+        {isSessionFinished ? (
+          <p role="status">
+            That's all {roundCount} rounds. Writing your report…
+          </p>
+        ) : (
+          <TypedAnswerBox isDisabled={isKidThinking} onSend={sendAnswer} />
+        )}
+      </footer>
     </main>
   );
 }

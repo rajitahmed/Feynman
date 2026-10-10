@@ -77,4 +77,9 @@ export type SubmitTurnReply = {
   kid_reply_text: string;
   round_number: number;
   is_session_finished: boolean;
+  kid_mood: "confused" | "got_it";
+};
+
+export type KidGreeting = {
+  kid_greeting_text: string;
 };

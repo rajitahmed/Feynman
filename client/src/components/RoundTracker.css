@@ -1,4 +1,55 @@
 .round-tracker {
+  --dot-size: 14px;
+  --current-dot-size: 20px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-6);
+  background: var(--color-card);
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+.round-tracker__dots {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Dots take the beanie colors in order. They never show a round's status: the rubric stays hidden. */
+.round-tracker__dot {
+  --dot-color: var(--color-red);
+  width: var(--dot-size);
+  height: var(--dot-size);
+  background: var(--dot-color);
+  border: var(--border-width) solid var(--dot-color);
+  border-radius: var(--radius-pill);
+}
+
+.round-tracker__dot:nth-child(4n + 2) {
+  --dot-color: var(--color-yellow);
+}
+
+.round-tracker__dot:nth-child(4n + 3) {
+  --dot-color: var(--color-blue);
+}
+
+.round-tracker__dot:nth-child(4n + 4) {
+  --dot-color: var(--color-green);
+}
+
+.round-tracker__dot--current {
+  width: var(--current-dot-size);
+  height: var(--current-dot-size);
+}
+
+.round-tracker__dot--future {
+  background: transparent;
+}
+
+.round-tracker__title {
   margin: 0;
   font-size: var(--font-size-large);
   font-weight: 800;

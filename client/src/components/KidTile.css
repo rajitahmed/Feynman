@@ -1,0 +1,34 @@
+.kid-tile {
+  --kid-avatar-size: 320px;
+  --overlay-ring-width: 4px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--kid-avatar-size);
+  padding: var(--space-6);
+  background: var(--color-stage);
+  border-radius: var(--radius-card);
+}
+
+/* Listening overlay: a blue ring around the tile. The pulse comes with the motion pass. */
+.kid-tile--listening {
+  box-shadow: 0 0 0 var(--overlay-ring-width) var(--color-blue);
+}
+
+.kid-tile__thinking-dots {
+  letter-spacing: 0.2em;
+}
+
+.kid-tile__name-tag {
+  position: absolute;
+  left: var(--space-4);
+  bottom: var(--space-4);
+  margin: 0;
+  padding: var(--space-1) var(--space-3);
+  font-weight: 700;
+  color: var(--color-card);
+  background: var(--color-text);
+  border-radius: var(--radius-pill);
+}

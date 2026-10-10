@@ -150,7 +150,7 @@ The spec lists four moods (user story 19), but the sprite has three rows. **Don'
 Map mood to row in **one constant**:
 
 ```ts
-// client/src/components/kidSpriteRows.ts
+// client/src/components/kidMood.ts
 export const KID_SPRITE_ROW_BY_MOOD: Record<KidMood, number> = {
   listening: 0,
   thinking: 0,

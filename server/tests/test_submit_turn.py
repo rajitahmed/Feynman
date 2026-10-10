@@ -56,6 +56,7 @@ def test_moves_to_next_round_and_asks_its_question_when_judge_says_move_on(
         "kid_reply_text": f"{MOVE_ON_JUDGMENT.kid_reply_text} {next_kid_question}",
         "round_number": 2,
         "is_session_finished": False,
+        "kid_mood": "got_it",
     }
 
 
@@ -71,6 +72,7 @@ def test_stays_on_round_and_counts_the_follow_up_when_judge_says_follow_up(
         "kid_reply_text": FOLLOW_UP_JUDGMENT.kid_reply_text,
         "round_number": 1,
         "is_session_finished": False,
+        "kid_mood": "confused",
     }
     assert second_response.json()["round_number"] == 1
     assert session_store.current_session is not None
@@ -91,6 +93,7 @@ def test_marks_round_fuzzy_and_moves_on_when_follow_ups_pass_the_cap(
         "kid_reply_text": f"{FUZZY_KID_LINE} {next_kid_question}",
         "round_number": 2,
         "is_session_finished": False,
+        "kid_mood": "confused",
     }
     assert session_store.current_session is not None
     assert session_store.current_session.fuzzy_round_numbers == [1]
@@ -108,6 +111,7 @@ def test_finishes_the_session_after_the_last_round(monkeypatch: pytest.MonkeyPat
         "kid_reply_text": MOVE_ON_JUDGMENT.kid_reply_text,
         "round_number": len(CANNED_RUBRIC.rounds),
         "is_session_finished": True,
+        "kid_mood": "got_it",
     }
     assert late_response.status_code == HTTPStatus.CONFLICT
 

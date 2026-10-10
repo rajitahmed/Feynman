@@ -1,0 +1,32 @@
+/* The parent sets --kid-avatar-size; the sheet is 6 frames across and 3 mood rows down. */
+.kid-avatar {
+  --sprite-frame-count: 6;
+  --sprite-row-count: 3;
+  width: var(--kid-avatar-size);
+  height: var(--kid-avatar-size);
+  background-image: url("/sprites/kid.png");
+  background-size: calc(var(--kid-avatar-size) * var(--sprite-frame-count))
+    calc(var(--kid-avatar-size) * var(--sprite-row-count));
+  background-position-y: calc(var(--kid-avatar-size) * var(--sprite-row) * -1);
+  animation: play-sprite-row
+    calc(var(--sprite-frame-duration) * var(--sprite-frame-count))
+    steps(var(--sprite-frame-count)) infinite;
+}
+
+@keyframes play-sprite-row {
+  from {
+    background-position-x: 0;
+  }
+  to {
+    background-position-x: calc(
+      var(--kid-avatar-size) * var(--sprite-frame-count) * -1
+    );
+  }
+}
+
+/* Frame 0 of the mood's row still shows the mood, so nothing is lost. */
+@media (prefers-reduced-motion: reduce) {
+  .kid-avatar {
+    animation: none;
+  }
+}

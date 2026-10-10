@@ -1,0 +1,16 @@
+/* Sits in the kid tile's corner, like a video call's self view. There's no camera. */
+.self-tile {
+  --self-tile-width: 160px;
+  --self-tile-height: 100px;
+  position: absolute;
+  right: var(--space-4);
+  bottom: var(--space-4);
+  display: grid;
+  place-items: center;
+  width: var(--self-tile-width);
+  height: var(--self-tile-height);
+  font-weight: 800;
+  color: var(--color-card);
+  background: var(--color-avatar-dark);
+  border-radius: var(--radius-button);
+}

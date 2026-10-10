@@ -1,10 +1,11 @@
-import { useState, type FormEvent } from "react";
-import { startSession } from "../api/server.ts";
+import { useEffect, useState, type FormEvent } from "react";
+import { getKidGreeting, startSession } from "../api/server.ts";
 import type { StartSessionReply } from "../api/types.ts";
 import Button from "../components/Button.tsx";
+import KidAvatar from "../components/KidAvatar.tsx";
+import SpeechBubble from "../components/SpeechBubble.tsx";
 import "./NotesScreen.css";
 
-const KID_GREETING = "Hi! What are you teaching me today?";
 const NOTES_BOX_LINES = 12;
 
 type NotesScreenProps = {
@@ -15,6 +16,14 @@ function NotesScreen({ onSessionStarted }: NotesScreenProps) {
   const [notes, setNotes] = useState("");
   const [isPreparing, setIsPreparing] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [kidGreeting, setKidGreeting] = useState("");
+
+  useEffect(() => {
+    // The greeting is a nicety; without it the kid just waits quietly.
+    getKidGreeting()
+      .then((greeting) => setKidGreeting(greeting.kid_greeting_text))
+      .catch(() => setKidGreeting(""));
+  }, []);
 
   async function submitNotes(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -32,6 +41,8 @@ function NotesScreen({ onSessionStarted }: NotesScreenProps) {
   if (isPreparing) {
     return (
       <main className="notes-screen">
+        <KidAvatar mood="thinking" />
+        <p aria-hidden="true">• • •</p>
         <p className="notes-screen__preparing" role="status">
           Preparing your session…
         </p>
@@ -41,7 +52,8 @@ function NotesScreen({ onSessionStarted }: NotesScreenProps) {
 
   return (
     <main className="notes-screen">
-      <p className="notes-screen__greeting">{KID_GREETING}</p>
+      {kidGreeting && <SpeechBubble>{kidGreeting}</SpeechBubble>}
+      <KidAvatar mood="listening" />
       <form className="notes-screen__card" onSubmit={submitNotes}>
         <label className="notes-screen__label" htmlFor="notes">
           Your notes

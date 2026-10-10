@@ -1,5 +1,8 @@
 .typed-answer-box {
+  --typed-answer-box-max-width: 720px;
   display: flex;
+  width: 100%;
+  max-width: var(--typed-answer-box-max-width);
   gap: var(--space-3);
 }
 

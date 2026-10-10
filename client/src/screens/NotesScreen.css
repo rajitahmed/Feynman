@@ -1,17 +1,23 @@
 .notes-screen {
+  --kid-avatar-size: 160px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   max-width: 720px;
   margin: 0 auto;
   padding: var(--space-12) var(--space-4);
   text-align: center;
 }
 
-.notes-screen__greeting,
 .notes-screen__preparing {
   font-size: var(--font-size-large);
   font-weight: 800;
 }
 
 .notes-screen__card {
+  box-sizing: border-box;
+  width: 100%;
+  margin-top: var(--space-6);
   display: flex;
   flex-direction: column;
   align-items: center;

@@ -1,0 +1,24 @@
+.speech-bubble {
+  --tail-size: 10px;
+  position: relative;
+  max-width: 28em;
+  margin: 0 0 var(--tail-size);
+  padding: var(--space-3) var(--space-4);
+  font-weight: 700;
+  color: var(--color-text);
+  text-align: center;
+  background: var(--color-card);
+  border-radius: var(--radius-card);
+}
+
+/* The tail: a rotated square peeking out under the middle, pointing at the kid. */
+.speech-bubble::after {
+  content: "";
+  position: absolute;
+  bottom: calc(var(--tail-size) / -2);
+  left: 50%;
+  width: var(--tail-size);
+  height: var(--tail-size);
+  background: inherit;
+  transform: translateX(-50%) rotate(45deg);
+}
