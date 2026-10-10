@@ -201,6 +201,10 @@ def test_records_a_key_point_once_when_two_answers_cover_it(
 
 def test_rejects_a_turn_before_any_session_started(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(session_store, "current_session", None)
+    # The route still resolves its language model before rejecting, so it needs a fake one.
+    monkeypatch.setitem(
+        app.dependency_overrides, get_language_model, lambda: FakeLanguageModel(canned_replies=[])
+    )
 
     response = client.post("/session/turn", json={"answer_text": ANSWER_TEXT})
 
