@@ -1,0 +1,56 @@
+.round-recap + .round-recap {
+  margin-top: var(--space-6);
+}
+
+.round-recap__label {
+  margin: 0 0 var(--space-3);
+}
+
+.round-recap__lines,
+.round-recap__exchange {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Kid lines sit on the left, yours on the right, like the live transcript. */
+.round-recap__line {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
+}
+
+.round-recap__line--you {
+  align-items: flex-end;
+}
+
+.round-recap__speaker,
+.round-recap__covered {
+  margin: 0;
+  font-size: var(--font-size-label);
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+.round-recap__covered {
+  max-width: 85%;
+  padding: 0;
+  text-align: right;
+  list-style: none;
+}
+
+.round-recap__bubble {
+  max-width: 85%;
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-page);
+  border-radius: var(--radius-button);
+}
+
+.round-recap__line--you .round-recap__bubble {
+  background: var(--color-tint-blue);
+}

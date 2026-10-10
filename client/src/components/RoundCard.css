@@ -17,7 +17,26 @@
   text-transform: capitalize;
 }
 
-.round-card__bullets {
+.round-card__count {
   margin: 0;
-  padding-left: var(--space-4);
+  font-weight: 700;
+}
+
+.round-card__key-points {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.round-card__key-point {
+  display: flex;
+  gap: var(--space-2);
+  color: var(--color-text-muted);
+}
+
+.round-card__key-point--covered {
+  color: var(--color-text);
 }

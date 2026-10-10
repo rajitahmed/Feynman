@@ -8,6 +8,8 @@ class JudgedAnswer(BaseModel):
     round_number: int
     answer_text: str
     judgment: Judgment
+    # What the kid said back, which can differ from the judge's line (the fuzzy and finished lines).
+    kid_reply_text: str
 
 
 class Session(BaseModel):

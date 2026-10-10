@@ -100,7 +100,7 @@ The block to paste at the start of every AI coding session lives in [AI_RULES.md
 **The gap report**
 
 21. As a learner, I want the report to appear automatically after round 4, so that the session has a clear ending.
-22. As a learner, I want four round cards with a status (covered, partly covered, or fuzzy) and 1-2 bullets each, so that I see my overall result quickly.
+22. As a learner, I want four round cards with a status (covered, partly covered, or fuzzy) and every key point marked hit or missed with an "N of M" count, so that I see my overall result quickly.
 23. As a learner, I want a list of the specific key points I never mentioned, so that I know exactly what to study next.
 24. As a learner, I want answers that closely mirrored my notes flagged, with my words shown next to the matching note line, so that I can see where I recited instead of explained.
 25. As a learner, I want one "try re-explaining this" prompt per gap, so that I have something concrete to practice without being handed the answer.

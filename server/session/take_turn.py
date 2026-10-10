@@ -29,20 +29,27 @@ def take_turn(
         answer_text,
         language_model,
     )
-    record_judged_answer(session, answer_text, judgment)
     kid_mood = KID_MOOD_BY_DECISION[judgment.decision]
     kid_reply_text = judgment.kid_reply_text
-    if judgment.decision == Decision.FOLLOW_UP:
-        if session.follow_up_count < MAX_FOLLOW_UPS_PER_ROUND:
-            session.follow_up_count += 1
-            return build_reply(session, answer_text, kid_reply_text, kid_mood, text_to_speech)
+    is_asking_follow_up = (
+        judgment.decision == Decision.FOLLOW_UP
+        and session.follow_up_count < MAX_FOLLOW_UPS_PER_ROUND
+    )
+    if is_asking_follow_up:
+        session.follow_up_count += 1
+    elif judgment.decision == Decision.FOLLOW_UP:
         session.fuzzy_round_numbers.append(session.current_round_number)
         kid_reply_text = FUZZY_KID_LINE
-    if session.current_round_number == len(session.rubric.rounds):
+    is_round_over = not is_asking_follow_up
+    if is_round_over and session.current_round_number == len(session.rubric.rounds):
         session.is_finished = True
-        return build_reply(session, answer_text, FINISHED_KID_LINE, KidMood.GOT_IT, text_to_speech)
-    advance_round(session)
-    kid_reply_text += f" {find_current_round(session).kid_question}"
+        kid_reply_text = FINISHED_KID_LINE
+        kid_mood = KidMood.GOT_IT
+    # Recorded before the next round's question is added, so the recap shows each question once.
+    record_judged_answer(session, answer_text, judgment, kid_reply_text)
+    if is_round_over and not session.is_finished:
+        advance_round(session)
+        kid_reply_text += f" {find_current_round(session).kid_question}"
     return build_reply(session, answer_text, kid_reply_text, kid_mood, text_to_speech)
 
 
@@ -76,12 +83,15 @@ def find_current_round_answers(session: Session) -> list[JudgedAnswer]:
     ]
 
 
-def record_judged_answer(session: Session, answer_text: str, judgment: Judgment) -> None:
+def record_judged_answer(
+    session: Session, answer_text: str, judgment: Judgment, kid_reply_text: str
+) -> None:
     session.judged_answers.append(
         JudgedAnswer(
             round_number=session.current_round_number,
             answer_text=answer_text,
             judgment=judgment,
+            kid_reply_text=kid_reply_text,
         )
     )
     # A follow-up answer often repeats a point the learner already made; count it once.

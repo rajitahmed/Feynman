@@ -10,11 +10,28 @@ export type ParrotingMatch = {
 
 export type RoundStatus = "covered" | "partly_covered" | "fuzzy";
 
+export type KeyPointMark = {
+  key_point: string;
+  is_covered: boolean;
+};
+
 export type RoundCard = {
   round_number: number;
   round_type: RoundType;
   status: RoundStatus;
-  bullets: string[];
+  key_point_marks: KeyPointMark[];
+};
+
+export type RecapAnswer = {
+  answer_text: string;
+  covered_key_points: string[];
+  kid_reply_text: string;
+};
+
+export type RoundRecap = {
+  round_number: number;
+  kid_question: string;
+  answers: RecapAnswer[];
 };
 
 export type GapReport = {
@@ -22,6 +39,7 @@ export type GapReport = {
   missed_key_points: string[];
   parroting_flags: ParrotingMatch[];
   re_explain_prompts: string[];
+  round_recaps: RoundRecap[];
 };
 
 export type StartSessionRequest = {

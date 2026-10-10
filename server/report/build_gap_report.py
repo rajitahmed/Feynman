@@ -1,9 +1,16 @@
-from models.report import GapReport, ReExplainPrompts, RoundCard, RoundStatus
+from models.report import (
+    GapReport,
+    KeyPointMark,
+    RecapAnswer,
+    ReExplainPrompts,
+    RoundCard,
+    RoundRecap,
+    RoundStatus,
+)
 from models.round import Round
 from models.session import Session
 from services.language_model import LanguageModel
 
-MAX_BULLETS_PER_CARD = 2
 # A fuzzy round can have every key point ticked yet still need practice.
 NO_MISSED_POINTS_TEXT = "nothing specific"
 
@@ -34,20 +41,38 @@ def build_gap_report(session: Session, language_model: LanguageModel) -> GapRepo
             if judged_answer.judgment.parroting is not None
         ],
         re_explain_prompts=write_re_explain_prompts(session, round_cards, language_model),
+        round_recaps=[
+            build_round_recap(session, round_number, planned_round)
+            for round_number, planned_round in enumerate(session.rubric.rounds, start=1)
+        ],
     )
 
 
 def build_round_card(session: Session, round_number: int, planned_round: Round) -> RoundCard:
-    covered_key_points = [
-        key_point
-        for key_point in planned_round.key_points
-        if key_point in session.covered_key_points
-    ]
     return RoundCard(
         round_number=round_number,
         round_type=planned_round.round_type,
         status=find_round_status(session, round_number, planned_round),
-        bullets=covered_key_points[:MAX_BULLETS_PER_CARD],
+        key_point_marks=[
+            KeyPointMark(key_point=key_point, is_covered=key_point in session.covered_key_points)
+            for key_point in planned_round.key_points
+        ],
+    )
+
+
+def build_round_recap(session: Session, round_number: int, planned_round: Round) -> RoundRecap:
+    return RoundRecap(
+        round_number=round_number,
+        kid_question=planned_round.kid_question,
+        answers=[
+            RecapAnswer(
+                answer_text=judged_answer.answer_text,
+                covered_key_points=judged_answer.judgment.covered_key_points,
+                kid_reply_text=judged_answer.kid_reply_text,
+            )
+            for judged_answer in session.judged_answers
+            if judged_answer.round_number == round_number
+        ],
     )
 
 

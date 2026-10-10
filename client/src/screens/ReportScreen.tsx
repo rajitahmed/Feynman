@@ -2,6 +2,7 @@ import type { GapReport } from "../api/types.ts";
 import Button from "../components/Button.tsx";
 import KidAvatar from "../components/KidAvatar.tsx";
 import RoundCard from "../components/RoundCard.tsx";
+import RoundRecap from "../components/RoundRecap.tsx";
 import "./ReportScreen.css";
 
 type ReportScreenProps = {
@@ -83,6 +84,13 @@ function ReportScreen({ report, onStartAgain }: ReportScreenProps) {
           </ul>
         </section>
       )}
+
+      <section className="card report-screen__card">
+        <h2 className="card-label report-screen__label">Session recap</h2>
+        {report.round_recaps.map((roundRecap) => (
+          <RoundRecap key={roundRecap.round_number} roundRecap={roundRecap} />
+        ))}
+      </section>
 
       <p className="report-screen__muted report-screen__footer">
         No score here, just the parts to practice next.

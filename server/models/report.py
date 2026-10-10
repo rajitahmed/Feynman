@@ -12,11 +12,28 @@ class RoundStatus(StrEnum):
     FUZZY = "fuzzy"
 
 
+class KeyPointMark(BaseModel):
+    key_point: str
+    is_covered: bool
+
+
 class RoundCard(BaseModel):
     round_number: int
     round_type: RoundType
     status: RoundStatus
-    bullets: list[str]
+    key_point_marks: list[KeyPointMark]
+
+
+class RecapAnswer(BaseModel):
+    answer_text: str
+    covered_key_points: list[str]
+    kid_reply_text: str
+
+
+class RoundRecap(BaseModel):
+    round_number: int
+    kid_question: str
+    answers: list[RecapAnswer]
 
 
 class GapReport(BaseModel):
@@ -26,6 +43,7 @@ class GapReport(BaseModel):
     missed_key_points: list[str]
     parroting_flags: list[ParrotingMatch]
     re_explain_prompts: list[str]
+    round_recaps: list[RoundRecap]
 
 
 class ReExplainPrompts(BaseModel):

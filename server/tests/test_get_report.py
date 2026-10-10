@@ -9,8 +9,13 @@ from models.session import JudgedAnswer, Session
 from services.canned_re_explain_prompts import CANNED_RE_EXPLAIN_PROMPTS
 from services.canned_rubric import CANNED_RUBRIC
 from services.fake_language_model import FakeLanguageModel
+from services.fake_speech_to_text import FakeSpeechToText
+from services.fake_text_to_speech import FakeTextToSpeech
 from services.get_language_model import get_language_model
+from services.get_speech_to_text import get_speech_to_text
+from services.get_text_to_speech import get_text_to_speech
 from session.session_store import session_store
+from session.take_turn import FINISHED_KID_LINE, FUZZY_KID_LINE
 
 RECURSION_NOTES = "A function that calls itself until it reaches a base case."
 EVERY_KEY_POINT = [
@@ -33,7 +38,16 @@ PARROTED_ANSWER = JudgedAnswer(
         decision=Decision.MOVE_ON,
         kid_reply_text="Oh, I get it!",
     ),
+    kid_reply_text="Oh, I get it!",
 )
+CONFUSED_JUDGMENT = Judgment(
+    covered_key_points=WHAT_ROUND.key_points[:1],
+    parroting=None,
+    decision=Decision.FOLLOW_UP,
+    kid_reply_text="Wait, but how does it stop?",
+)
+FIRST_ANSWER_TEXT = "It's a function that uses itself."
+SECOND_ANSWER_TEXT = "It stops when it reaches the simplest case."
 
 client = TestClient(app)
 
@@ -55,6 +69,22 @@ def finish_session(
     monkeypatch.setattr(session_store, "current_session", finished_session)
     fake_language_model = FakeLanguageModel(canned_replies=[CANNED_RE_EXPLAIN_PROMPTS])
     monkeypatch.setitem(app.dependency_overrides, get_language_model, lambda: fake_language_model)
+    return fake_language_model
+
+
+def play_whole_session_confused(monkeypatch: pytest.MonkeyPatch) -> FakeLanguageModel:
+    # The kid stays confused, so every round gets one follow-up and then goes fuzzy.
+    fake_language_model = FakeLanguageModel(
+        canned_replies=[CANNED_RUBRIC, CONFUSED_JUDGMENT, CANNED_RE_EXPLAIN_PROMPTS]
+    )
+    monkeypatch.setitem(app.dependency_overrides, get_language_model, lambda: fake_language_model)
+    monkeypatch.setitem(app.dependency_overrides, get_text_to_speech, FakeTextToSpeech)
+    monkeypatch.setitem(app.dependency_overrides, get_speech_to_text, FakeSpeechToText)
+    client.post("/session/start", json={"notes": RECURSION_NOTES})
+    for _planned_round in CANNED_RUBRIC.rounds:
+        client.post("/session/turn", json={"answer_text": FIRST_ANSWER_TEXT})
+        client.post("/session/turn", json={"answer_text": SECOND_ANSWER_TEXT})
+    fake_language_model.received_prompts.clear()
     return fake_language_model
 
 
@@ -84,7 +114,46 @@ def test_each_round_card_shows_covered_partly_covered_or_fuzzy(
         "fuzzy",
         "covered",
     ]
-    assert round_cards[1]["bullets"] == HOW_ROUND.key_points[:1]
+
+
+def test_each_round_card_marks_every_key_point_as_hit_or_missed(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    finish_session(COVERED_KEY_POINTS, [FUZZY_ROUND_NUMBER], monkeypatch)
+
+    how_round_card = client.get("/session/report").json()["round_cards"][1]
+
+    assert how_round_card["key_point_marks"] == [
+        {"key_point": key_point, "is_covered": key_point_index == 0}
+        for key_point_index, key_point in enumerate(HOW_ROUND.key_points)
+    ]
+
+
+def test_the_recap_shows_each_round_question_answer_and_kid_reply_in_order(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fake_language_model = play_whole_session_confused(monkeypatch)
+
+    round_recaps = client.get("/session/report").json()["round_recaps"]
+
+    assert [round_recap["kid_question"] for round_recap in round_recaps] == [
+        planned_round.kid_question for planned_round in CANNED_RUBRIC.rounds
+    ]
+    assert round_recaps[0]["answers"] == [
+        {
+            "answer_text": FIRST_ANSWER_TEXT,
+            "covered_key_points": CONFUSED_JUDGMENT.covered_key_points,
+            "kid_reply_text": CONFUSED_JUDGMENT.kid_reply_text,
+        },
+        {
+            "answer_text": SECOND_ANSWER_TEXT,
+            "covered_key_points": CONFUSED_JUDGMENT.covered_key_points,
+            "kid_reply_text": FUZZY_KID_LINE,
+        },
+    ]
+    assert round_recaps[-1]["answers"][-1]["kid_reply_text"] == FINISHED_KID_LINE
+    # The one report call writes the re-explain prompts; the recap comes from the recorded session.
+    assert len(fake_language_model.received_prompts) == 1
 
 
 def test_a_parroted_answer_shows_the_phrase_next_to_the_note_line(
